@@ -4,7 +4,7 @@
 
 ## Personal Automation: SQL Query Generator
 
-Welcome to my personal project! As part of my daily job, I found myself spending a lot of time on manual data entry. To optimize this process, I created this Python script that automates the generation of SQL queries from Excel data.
+Welcome to my personal project! As part of my daily job, I found myself spending a lot of time on manual tasks. To optimize this process, I created this Python script that automates the generation of SQL queries from Excel data.
 
 ### Project Purpose:
 - **Reduce Manual Work**: By automating the conversion of Excel data into SQL queries, I've significantly reduced the time spent on manual data entry.
