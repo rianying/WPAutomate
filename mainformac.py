@@ -7,7 +7,7 @@ import random
 def add_business_days(from_date, add_days):
     return np.busday_offset(from_date, add_days, roll='forward')
 
-def generate_queries(order_time):
+def generate_queries(order_time, csv_file_path):
     value_clauses_preorder = []  # We will store the individual value clauses for the preorder table
     value_clauses_order_checking_start = []  # We will store the individual value clauses for the order_checking_start table
     value_clauses_order_checking_finish = []  # We will store the individual value clauses for the order_checking_finish table
@@ -15,12 +15,12 @@ def generate_queries(order_time):
     fat_random_minutes = random.randint(1, 10)  # Generate random number of minutes between 1 and 10
     fat_start_time = (pd.to_datetime(order_time) + pd.Timedelta(minutes=fat_random_minutes)).strftime('%Y-%m-%d %H:%M:%S')
 
-    df = pd.read_excel(excel_file_path)  # Read the Excel file
+    df = pd.read_csv(csv_file_path)  # Read the CSV file
 
     for _, row in df.iterrows():
-        no_PO = row['No PO'] if not pd.isna(row['No PO']) else ""
-        no_SO = row['No SO'] if not pd.isna(row['No SO']) else ""
-        customer_name = row['Customer Name'] if not pd.isna(row['Customer Name']) else ""
+        no_PO = row['no_PO'] if not pd.isna(row['no_PO']) else ""
+        no_SO = row['no_SO'] if not pd.isna(row['no_SO']) else ""
+        customer_name = row['customer_name'] if not pd.isna(row['customer_name']) else ""
 
         if "CRB" in no_SO or "BDG" in no_SO:
             po_expired = add_business_days(pd.to_datetime(order_time).date(), 7)
@@ -50,12 +50,12 @@ def generate_queries(order_time):
     return query_preorder, query_order_checking_start, query_order_checking_finish
 
 if __name__ == "__main__":
-    excel_file_path = "preorder.xlsx"  # Replace this with the actual path of your Excel file
+    csv_file_path = "CheckPO.csv"  # Replace this with the actual path of your CSV file
 
     order_time = input("Enter the Order Time in 'YYYY-MM-DD HH:MM:SS' format: ")
 
     try:
-        queries_preorder, queries_order_checking_start, queries_order_checking_finish = generate_queries(order_time)
+        queries_preorder, queries_order_checking_start, queries_order_checking_finish = generate_queries(order_time, csv_file_path)
         queries_combined = f"{queries_preorder}\n\n{queries_order_checking_start}\n\n{queries_order_checking_finish}"
         print("Generated SQL Queries:\n")
         print(queries_combined)
