@@ -43,9 +43,9 @@ def generate_queries(order_time, csv_file_path):
     values_str_order_checking_start = ',\n'.join(value_clauses_order_checking_start)  # Join all value clauses for order_checking_start table together, separated by commas
     values_str_order_checking_finish = ',\n'.join(value_clauses_order_checking_finish)  # Join all value clauses for order_checking_finish table together, separated by commas
 
-    query_preorder = f'INSERT INTO preorder(no_PO, no_SO, customer_name, order_time, po_expired) VALUES {values_str_preorder};'
-    query_order_checking_start = f'INSERT INTO order_checking_start(no_SO, start_check, customer_name) VALUES {values_str_order_checking_start};'
-    query_order_checking_finish = f'INSERT INTO order_checking_finish(no_SO, no_SJ, FAT_checking_finish, customer, status_FAT) VALUES {values_str_order_checking_finish};'
+    query_preorder = f'INSERT INTO preorder(no_PO, no_SO, customer_name, order_time, po_expired) VALUES {values_str_preorder};\n/'
+    query_order_checking_start = f'INSERT INTO order_checking_start(no_SO, start_check, customer_name) VALUES {values_str_order_checking_start};\n/'
+    query_order_checking_finish = f'INSERT INTO orders_checking_finish(no_SO, no_SJ, FAT_checking_finish, customer, status_FAT) VALUES {values_str_order_checking_finish};\n/'
 
     return query_preorder, query_order_checking_start, query_order_checking_finish
 
