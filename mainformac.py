@@ -2,25 +2,27 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 import random
+import subprocess
 
 # Helper function to calculate business days
 def add_business_days(from_date, add_days):
     return np.busday_offset(from_date, add_days, roll='forward')
 
-def generate_queries(order_time, csv_file_path):
-    value_clauses_preorder = []  # We will store the individual value clauses for the preorder table
-    value_clauses_order_checking_start = []  # We will store the individual value clauses for the order_checking_start table
-    value_clauses_order_checking_finish = []  # We will store the individual value clauses for the order_checking_finish table
-
-    fat_random_minutes = random.randint(1, 10)  # Generate random number of minutes between 1 and 10
-    fat_start_time = (pd.to_datetime(order_time) + pd.Timedelta(minutes=fat_random_minutes)).strftime('%Y-%m-%d %H:%M:%S')
-
+def generate_queries(csv_file_path):
     df = pd.read_csv(csv_file_path)  # Read the CSV file
+
+    value_clauses_preorder = []
+    value_clauses_order_checking_start = []
+    value_clauses_order_checking_finish = []
 
     for _, row in df.iterrows():
         no_PO = row['no_PO'] if not pd.isna(row['no_PO']) else ""
         no_SO = row['no_SO'] if not pd.isna(row['no_SO']) else ""
         customer_name = row['customer_name'] if not pd.isna(row['customer_name']) else ""
+        order_time = row['order_time'] if not pd.isna(row['order_time']) else ""  # Extract order_time from the current row
+
+        fat_random_minutes = random.randint(1, 10)  # Generate random number of minutes between 1 and 10
+        fat_start_time = (pd.to_datetime(order_time) + pd.Timedelta(minutes=fat_random_minutes)).strftime('%Y-%m-%d %H:%M:%S')
 
         if "CRB" in no_SO or "BDG" in no_SO:
             po_expired = add_business_days(pd.to_datetime(order_time).date(), 7)
@@ -49,15 +51,20 @@ def generate_queries(order_time, csv_file_path):
 
     return query_preorder, query_order_checking_start, query_order_checking_finish
 
+def copy_to_clipboard(text):
+    process = subprocess.Popen('pbcopy', env={'LANG': 'en_US.UTF-8'}, stdin=subprocess.PIPE)
+    process.communicate(text.encode('utf-8'))
+
 if __name__ == "__main__":
     csv_file_path = "CheckPO.csv"  # Replace this with the actual path of your CSV file
 
-    order_time = input("Enter the Order Time in 'YYYY-MM-DD HH:MM:SS' format: ")
-
     try:
-        queries_preorder, queries_order_checking_start, queries_order_checking_finish = generate_queries(order_time, csv_file_path)
+        queries_preorder, queries_order_checking_start, queries_order_checking_finish = generate_queries(csv_file_path)
         queries_combined = f"{queries_preorder}\n\n{queries_order_checking_start}\n\n{queries_order_checking_finish}"
-        print("Generated SQL Queries:\n")
-        print(queries_combined)
+
+        # Copy to clipboard
+        copy_to_clipboard(queries_combined)
+
+        print("Generated SQL Queries have been copied to the clipboard!")
     except Exception as e:
         print("Error:", str(e))
