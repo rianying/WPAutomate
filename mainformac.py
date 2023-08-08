@@ -3,6 +3,7 @@ import numpy as np
 from datetime import datetime, timedelta
 import random
 import subprocess
+import os
 
 # Helper function to calculate business days
 def add_business_days(from_date, add_days):
@@ -66,5 +67,13 @@ if __name__ == "__main__":
         copy_to_clipboard(queries_combined)
 
         print("Generated SQL Queries have been copied to the clipboard!")
+
+        # Delete the CSV file
+        if os.path.exists(csv_file_path):
+            os.remove(csv_file_path)
+            print(f"{csv_file_path} has been deleted.")
+        else:
+            print(f"{csv_file_path} does not exist.")
+
     except Exception as e:
         print("Error:", str(e))
