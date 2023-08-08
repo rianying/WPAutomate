@@ -71,9 +71,9 @@ if __name__ == "__main__":
         # Delete the CSV file
         if os.path.exists(csv_file_path):
             os.remove(csv_file_path)
-            print(f"{csv_file_path} has been deleted.")
+            print(f"\n{csv_file_path} has been deleted.")
         else:
-            print(f"{csv_file_path} does not exist.")
+            print(f"\n{csv_file_path} does not exist.")
 
     except Exception as e:
         print("Error:", str(e))
