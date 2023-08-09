@@ -3,6 +3,7 @@ import numpy as np
 import tkinter as tk
 from tkinter import filedialog, messagebox
 import random
+import os
 
 # Helper function to calculate business days
 def add_business_days(from_date, add_days):
@@ -71,6 +72,12 @@ def execute():
         messagebox.showinfo("Notification", "Generated SQL Queries have been copied to the clipboard!")
     except Exception as e:
         messagebox.showerror("Error", str(e))
+
+    if os.path.exists(filepath):
+        os.remove(filepath)
+        messagebox.showinfo("Notification", "The file has been deleted!")
+    else:
+        messagebox.showerror("Error", "The file does not exist!")
 
 app = tk.Tk()
 app.title("SQL Query Generator")
