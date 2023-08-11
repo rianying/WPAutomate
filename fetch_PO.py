@@ -1,16 +1,21 @@
 import pandas as pd
+import os
 
-def process_csv(file_path):
-    # 1. Read the csv file
-    df = pd.read_csv(file_path, sep=',')
-    
-    # 3. Take only TGL SO, NO. SO, and NAMA PELANGGAN
+def clean():
+    so = r'/Volumes/PUBLIC/SC - Samuel (Intern)/SO.csv'
+    data = pd.read_csv(so, sep=';', skiprows=4)
+    data.rename(columns={'Tgl Pesan': 'order_date','Unnamed: 2': 'no_SO','Unnamed: 4': 'customer_name', 'Unnamed: 6': 'no_PO'}, inplace=True)
+    selected = data[['order_date', 'no_PO', 'no_SO', 'customer_name']]
+    cleaned = selected[selected['no_SO'].notna()]
+    cleaned.to_csv('SO_cleaned.csv', index=False)
+    print('SO.csv has been cleaned!')
+
+clean()
+
+def process_csv(data):
+    df = data.copy()
     df = df[["order_date", "no_PO", "no_SO", "customer_name"]]
-    
-    # 2. Remove duplicates based on the specific columns
-    df = df.drop_duplicates()
-    
-    # Translate month abbreviations to English
+
     month_translations = {
         "Jan": "Jan", "Feb": "Feb", "Mar": "Mar", "Apr": "Apr",
         "Mei": "May", "Jun": "Jun", "Jul": "Jul", "Agu": "Aug",
@@ -19,22 +24,18 @@ def process_csv(file_path):
     for non_eng, eng in month_translations.items():
         df["order_date"] = df["order_date"].str.replace(non_eng, eng)
     
-    # 4. Change TGL SO to date time and asks user input for the time.
     time_input = input("Please enter the time (format HH:MM:SS): ")
     df["order_date"] = pd.to_datetime(df["order_date"], format='%d %b %Y') 
     df["order_date"] = df["order_date"].dt.strftime('%Y-%m-%d') + ' ' + time_input
     
-    # 5. Asks user input for NO. SO range start
     start_range = input("Please enter the start of the NO. SO range: ")
-    
-    # 6. Asks user input for NO. SO range finish
     finish_range = input("Please enter the finish of the NO. SO range: ")
     
-    # Filter the dataframe based on the NO. SO range provided by the user
     result_df = df[df['no_SO'].between(start_range, finish_range)]
     
-    # 7. Print the result
     result_df.to_csv('PO_fetched.csv', index=False)
+    os.remove('SO_cleaned.csv')
+    print('PO_fetched.csv has been generated.')
 
-# Call the function with the path to your CSV file
-process_csv("SO.csv")
+cleaned_data = pd.read_csv('SO_cleaned.csv')
+process_csv(cleaned_data)
