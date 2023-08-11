@@ -17,7 +17,6 @@ def generate_queries(csv_file_path):
     value_clauses_order_checking_finish = []
 
     for _, row in df.iterrows():
-        no_PO = row['no_PO'] if not pd.isna(row['no_PO']) else ""
         no_SO = row['no_SO'] if not pd.isna(row['no_SO']) else ""
         customer_name = row['customer_name'] if not pd.isna(row['customer_name']) else ""
         order_time = row['order_time'] if not pd.isna(row['order_time']) else ""  # Extract order_time from the current row
@@ -30,7 +29,7 @@ def generate_queries(csv_file_path):
         else:
             po_expired = add_business_days(pd.to_datetime(order_time).date(), 4)
 
-        value_clause_preorder = f'("{no_PO}", "{no_SO}", "{customer_name}", \'{order_time}\', \'{po_expired}\')'
+        value_clause_preorder = f'("{no_SO}", "{customer_name}", \'{order_time}\', \'{po_expired}\')'
         value_clauses_preorder.append(value_clause_preorder)
 
         value_clause_order_checking_start = f'("{no_SO}", \'{fat_start_time}\', "{customer_name}")'
@@ -42,15 +41,13 @@ def generate_queries(csv_file_path):
         value_clause_order_checking_finish = f'("{no_SO}", "{no_SJ}", \'{fat_checking_finish}\', "{customer_name}", "Process")'
         value_clauses_order_checking_finish.append(value_clause_order_checking_finish)
 
-    values_str_preorder = ',\n'.join(value_clauses_preorder)  # Join all value clauses for preorder table together, separated by commas
     values_str_order_checking_start = ',\n'.join(value_clauses_order_checking_start)  # Join all value clauses for order_checking_start table together, separated by commas
     values_str_order_checking_finish = ',\n'.join(value_clauses_order_checking_finish)  # Join all value clauses for order_checking_finish table together, separated by commas
 
-    query_preorder = f'INSERT INTO preorder(no_PO, no_SO, customer_name, order_time, po_expired) VALUES {values_str_preorder};\n/'
     query_order_checking_start = f'INSERT INTO order_checking_start(no_SO, start_check, customer_name) VALUES {values_str_order_checking_start};\n/'
     query_order_checking_finish = f'INSERT INTO orders_checking_finish(no_SO, no_SJ, FAT_checking_finish, customer, status_FAT) VALUES {values_str_order_checking_finish};\n/'
 
-    return query_preorder, query_order_checking_start, query_order_checking_finish
+    return query_order_checking_start, query_order_checking_finish
 
 def copy_to_clipboard(text):
     process = subprocess.Popen('pbcopy', env={'LANG': 'en_US.UTF-8'}, stdin=subprocess.PIPE)
@@ -60,8 +57,8 @@ if __name__ == "__main__":
     csv_file_path = "CheckPO.csv"  # Replace this with the actual path of your CSV file
 
     try:
-        queries_preorder, queries_order_checking_start, queries_order_checking_finish = generate_queries(csv_file_path)
-        queries_combined = f"{queries_preorder}\n\n{queries_order_checking_start}\n\n{queries_order_checking_finish}"
+        queries_order_checking_start, queries_order_checking_finish = generate_queries(csv_file_path)
+        queries_combined = f"{queries_order_checking_start}\n\n{queries_order_checking_finish}"
 
         # Copy to clipboard
         copy_to_clipboard(queries_combined)
