@@ -1,5 +1,7 @@
 ### README.md
 
+![Project Logo](https://manggalla.com/beta/wp-content/uploads/2023/02/Logo-SMR-1.png)
+
 ---
 
 ## Personal Automation: SQL Query Generator
@@ -43,5 +45,6 @@ Thank you for checking out my project! I hope it serves as an inspiration for ot
 
 `Rahmadiyan Muhammad`
 
+- Porto: [https://rian.social
 - Medium: [https://medium.com/@rianying
 - Linkedin: [https://www.linkedin.com/in/rahmadiyanmuhammad/
