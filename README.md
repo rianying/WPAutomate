@@ -1,4 +1,3 @@
-### README.md
 
 ![Project Logo](https://manggalla.com/beta/wp-content/uploads/2023/02/Logo-SMR-1.png)
 
