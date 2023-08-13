@@ -10,19 +10,19 @@ import hashlib
 def add_business_days(from_date, add_days):
     return np.busday_offset(from_date, add_days, roll='forward')
 
-def check_password(password):
-    # Hash the password for security
-    hashed_password = hashlib.sha256(password.encode()).hexdigest()
-    # Replace this with the actual hashed password you want to use
-    stored_hashed_password = "rianying"
-    return hashed_password == stored_hashed_password
+# def check_password(password):
+#     # Hash the password for security
+#     hashed_password = hashlib.sha256(password.encode()).hexdigest()
+#     # Replace this with the actual hashed password you want to use
+#     stored_hashed_password = "rianying"
+#     return hashed_password == stored_hashed_password
 
-def password_prompt():
-    password = simpledialog.askstring("Password", "Enter password:", show="*")
-    if password is not None and check_password(password):
-        execute()
-    else:
-        messagebox.showerror("Error", "Incorrect password!")
+# def password_prompt():
+#     password = simpledialog.askstring("Password", "Enter password:", show="*")
+#     if password is not None and check_password(password):
+#         execute()
+#     else:
+#         messagebox.showerror("Error", "Incorrect password!")
 
 def generate_queries(filepath):
     df = pd.read_csv(filepath)  # Updated this line to read from CSV
