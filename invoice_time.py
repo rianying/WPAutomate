@@ -4,6 +4,7 @@ import pandas as pd
 import tkinter as tk
 from tkinter import filedialog
 import tkinter.messagebox as messagebox
+import os
 
 # Function to pick CSV file using file dialog
 def pick_csv():
@@ -31,7 +32,8 @@ def generate_sql():
     root.clipboard_clear()
     root.clipboard_append(sql_query)
     root.update()
-    messagebox.showinfo("Success", "Generated SQL query copied to clipboard!")
+    os.remove(csv_file_path)
+    messagebox.showinfo("Success", "Generated SQL query copied to clipboard! and 'outbound_invoice_check.csv' is deleted.")
 
 # Create the main window
 root = tk.Tk()
