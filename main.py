@@ -6,6 +6,7 @@ import subprocess
 import os
 import json
 import random
+from fetch_PO import clean, process_csv
 
 def generate_single_query(csv_file, customer_names, po_expire_data):
     df = pd.read_csv(csv_file)
@@ -94,7 +95,7 @@ if __name__ == "__main__":
     po_expire_df = pd.read_csv(po_expire_file)
     for _, row in po_expire_df.iterrows():
         po_expire_data[row['customer_name']] = row['po_expire']
-    
+
     query = generate_single_query(csv_file, customer_names, po_expire_data)
     
     copy_to_clipboard(query)
