@@ -24,53 +24,64 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
         # Fetch customer_name from customer_names dictionary
         customer_number = row['customer_number']
         customer_name = customer_names.get(str(customer_number), '')
-        fat_random_minutes = random.randint(1, 10)
-        fat_start_time = (pd.to_datetime(order_time) + pd.Timedelta(minutes=fat_random_minutes)).strftime('%Y-%m-%d %H:%M:%S')
-        fat_finish_time = (pd.to_datetime(fat_start_time) + pd.Timedelta(minutes=fat_random_minutes)).strftime('%Y-%m-%d %H:%M:%S')
         
-        # Fetch po_expire from po_expire_data dictionary
-        po_expire = po_expire_data.get(customer_name, 0)  # Default to 0 if not found
-        
-        # Check if no_SO contains 'CRB' or 'BDG'
-        if 'CRB' in no_SO or 'BDG' in no_SO:
-            po_expired = order_time + np.timedelta64(po_expire + 7, 'D')
+        if 'SF' in no_SO:
+            fat_random_minutes = random.randint(1, 10)
+            fat_start_time = (pd.to_datetime(order_time) + pd.Timedelta(minutes=fat_random_minutes)).strftime('%Y-%m-%d %H:%M:%S')
+            fat_finish_time = (pd.to_datetime(fat_start_time) + pd.Timedelta(minutes=fat_random_minutes)).strftime('%Y-%m-%d %H:%M:%S')
+            
+            # Fetch po_expire from po_expire_data dictionary
+            po_expire = po_expire_data.get(customer_name, 0)  # Default to 0 if not found
+
+            # Check if no_SO contains 'CRB' or 'BDG'
+            if 'CRB' in no_SO or 'BDG' in no_SO:
+                po_expired = order_time + np.timedelta64(po_expire + 7, 'D')
+            else:
+                po_expired = order_time + np.timedelta64(po_expire, 'D')
+
+            pre_order_values = (
+                "('{}', '{}', '{}', '{}', '{}')".format(
+                    no_PO, no_SO, customer_name,
+                    np.datetime_as_string(order_time, unit='s').replace('T', ' '),
+                    np.datetime_as_string(po_expired, unit='D')
+                )
+            )
+            preorder_query_values.append(pre_order_values)
+
+            fat_start_value = (
+                "('{}', '{}', '{}')".format(
+                    no_SO, fat_start_time, customer_name
+                )
+            )
+            fat_start_values.append(fat_start_value)
+
+            fat_finish_value = (
+                "('{}', '{}', '{}', '{}', '{}')".format(
+                    no_SO, no_SO.replace('SO', 'SJ'), fat_finish_time, customer_name, 'Process'
+                )
+            )
+            fat_finish_values.append(fat_finish_value)
         else:
-            po_expired = order_time + np.timedelta64(po_expire, 'D')
-
-        pre_order_values = (
-            "('{}', '{}', '{}', '{}', '{}')".format(
-                no_PO, no_SO, customer_name,
-                np.datetime_as_string(order_time, unit='s').replace('T', ' '),
-                np.datetime_as_string(po_expired, unit='D')
+            pre_order_values = (
+                "('{}', '{}', '{}', '{}', '{}')".format(
+                    no_PO, no_SO, customer_name,
+                    np.datetime_as_string(order_time, unit='s').replace('T', ' '),
+                    np.datetime_as_string(order_time, unit='s').replace('T', ' ')
+                )
             )
-        )
-        preorder_query_values.append(pre_order_values)
+            preorder_query_values.append(pre_order_values)
 
-        fat_start_value = (
-            "('{}', '{}', '{}')".format(
-                no_SO, fat_start_time, customer_name
-            )
-        )
-        fat_start_values.append(fat_start_value)
-
-        fat_finish_value = (
-            "('{}', '{}', '{}', '{}', '{}')".format(
-                no_SO, no_SO.replace('SO', 'SJ'), fat_finish_time, customer_name, 'Process'
-            )
-        )
-        fat_finish_values.append(fat_finish_value)
-
-    insert_query = (
-        "INSERT INTO preorder (no_PO, no_SO, customer_name, order_time, po_expired) VALUES\n" +
-        ',\n'.join(preorder_query_values) +
-        ";\n/"
-        "\nINSERT INTO order_checking_start (no_SO, start_check, customer_name) VALUES\n" +
-        ',\n'.join(fat_start_values) +
-        ";\n/"
-        "\nINSERT INTO orders_checking_finish (no_SO, no_SJ, FAT_checking_finish, customer, status_FAT) VALUES\n" +
-        ',\n'.join(fat_finish_values) +
-        ";\n/"
-    )
+    insert_query = "INSERT INTO preorder (no_PO, no_SO, customer_name, order_time, po_expired) VALUES\n"
+    if preorder_query_values:
+        insert_query += ',\n'.join(preorder_query_values) + ";\n/"
+    
+    if fat_start_values:
+        insert_query += "\nINSERT INTO order_checking_start (no_SO, start_check, customer_name) VALUES\n"
+        insert_query += ',\n'.join(fat_start_values) + ";\n/"
+    
+    if fat_finish_values:
+        insert_query += "\nINSERT INTO orders_checking_finish (no_SO, no_SJ, FAT_checking_finish, customer, status_FAT) VALUES\n"
+        insert_query += ',\n'.join(fat_finish_values) + ";\n/"
 
     return insert_query
 
