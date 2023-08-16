@@ -1,6 +1,7 @@
 import pandas as pd
 from datetime import datetime
 import subprocess
+import os
 
 # Read the original CSV file
 df = pd.read_csv('balikansf.csv')
@@ -35,5 +36,7 @@ clipboard_content = transformed_df.to_csv(index=False, sep='\t')
 
 # Copy the content to clipboard using subprocess
 subprocess.run(['pbcopy'], input=clipboard_content.encode('utf-8'))
+os.remove('balikansf.csv')
 
 print("DataFrame content copied to clipboard.")
+print("balikansf.csv removed.")
