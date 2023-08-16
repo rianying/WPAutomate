@@ -29,11 +29,11 @@ This repository contains a collection of Python scripts designed to perform vari
 
 ### validatemac.py
 
-This script reads MAC addresses from a CSV file, validates them, and generates SQL queries for insertion into a database. It calculates business days, generates timestamps, and handles customer-specific logic.
+This script is for Mac-OS and it reads a content from a CSV file, validates them, and generates SQL queries for insertion into a database. It calculates business days, generates timestamps, and handles customer-specific logic.
 
 ### validatewindows.py
 
-A GUI-based script that validates passwords using a hashed comparison. It prompts users for a password, checks it against a stored hash, and performs actions accordingly. It also generates SQL queries for insertion based on user input.
+A GUI-based script that validates content for windows OS. It prompts users for a password, checks it against a stored hash, and performs actions accordingly. It also generates SQL queries for insertion based on user input.
 
 ### fetch_PO.py
 
