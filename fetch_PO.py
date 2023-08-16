@@ -24,9 +24,9 @@ def process_csv(data):
     df["order_date"] = pd.to_datetime(df["order_date"], format='%d %b %Y') 
     df["order_date"] = df["order_date"].dt.strftime('%Y-%m-%d') + ' ' + time_input
     
-    start_range = input("Please enter the start of the NO. SO range (press Enter to fetch all): ")
+    start_range = input("Please enter the start of the NO. SO range (press Enter to fetch all): ").upper()
     if start_range:
-        finish_range = input("Please enter the finish of the NO. SO range: ")
+        finish_range = input("Please enter the finish of the NO. SO range: ").upper()
         result_df = df[df['no_SO'].between(start_range, finish_range)]
     else:
         result_df = df
