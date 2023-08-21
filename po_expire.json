@@ -6310,5 +6310,9 @@
     {
         "customer_name": "PT. MEGAH TETAP SAKTI",
         "po_expire": " 8"
+    },
+    {
+        "customer_name": "PT. MITRA BILLION INTIKARYA",
+        "po_expire": "4"
     }
 ]
