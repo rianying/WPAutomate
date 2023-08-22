@@ -19,7 +19,7 @@ def generate_sql():
     csv_file_path = selected_file_label.cget("text").replace("Selected CSV File: ", "")
     data = pd.read_csv(csv_file_path)
     data['SJ_time'] = pd.to_datetime(data['SJ_time'])
-    data['computed_invoice_time'] = data['SJ_time'].apply(lambda x: x + timedelta(seconds=random.randint(1, 3*3600)))
+    data['computed_invoice_time'] = data['SJ_time'].apply(lambda x: x + timedelta(seconds=random.randint(3600, 3*3600)))
 
     sql_query = "UPDATE outbound SET invoice_time = CASE\n"
     for _, row in data.iterrows():
