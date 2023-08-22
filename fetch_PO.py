@@ -36,7 +36,7 @@ def process_csv(data):
     print(f'{output_file} has been generated.')
 
 input_file = r'/Volumes/PUBLIC/SC - Samuel (Intern)/SO.csv'
-cleaned_file = 'SO_cleaned.csv'
+cleaned_file = '/Users/rian/Documents/GitHub/WPAutomate/SO_cleaned.csv'
 clean(input_file, cleaned_file)
 
 cleaned_data = pd.read_csv(cleaned_file)

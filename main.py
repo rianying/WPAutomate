@@ -24,17 +24,13 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
         customer_number = row['customer_number']
         customer_name = customer_names.get(str(customer_number), '')
         
-        if 'SO' in no_SO:
+        if 'SF' in no_SO:
             fat_random_minutes = random.randint(1, 10)
             fat_start_time = (pd.to_datetime(order_time) + pd.Timedelta(minutes=fat_random_minutes)).strftime('%Y-%m-%d %H:%M:%S')
             fat_finish_time = (pd.to_datetime(fat_start_time) + pd.Timedelta(minutes=fat_random_minutes)).strftime('%Y-%m-%d %H:%M:%S')
             
-            po_expire_info = po_expire_data.get(customer_name)
-            if po_expire_info:
-                po_expire_value = int(po_expire_info['po_expire'])  # Convert the string to an integer
-                po_expired = order_time + np.timedelta64(po_expire_value, 'D')
-            else:
-                po_expired = order_time + np.timedelta64(4, 'D')  # Default to 4 days
+            po_expire_value = po_expire_data.get(customer_name, 4)  # Default to 4 days if not found
+            po_expired = order_time + np.timedelta64(po_expire_value, 'D')
             
             pre_order_values = (
                 "('{}', '{}', '{}', '{}', '{}')".format(
@@ -68,8 +64,9 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
             )
             preorder_query_values.append(pre_order_values)
 
-    insert_query = "INSERT INTO preorder (no_PO, no_SO, customer_name, order_time, po_expired) VALUES\n"
+    
     if preorder_query_values:
+        insert_query = "INSERT INTO preorder (no_PO, no_SO, customer_name, order_time, po_expired) VALUES\n"
         insert_query += ',\n'.join(preorder_query_values) + ";\n/"
     
     if fat_start_values:
@@ -90,16 +87,16 @@ def copy_to_clipboard(text):
         print("Error copying to clipboard.")
 
 if __name__ == "__main__":
-    csv_file = 'PO_fetched.csv'
-    json_file = 'customer_names.json'
-    po_expire_file = 'po_expire.json'  # Change to JSON file
+    csv_file = '/Users/rian/Documents/GitHub/WPAutomate/PO_fetched.csv'
+    json_file = '/Users/rian/Documents/GitHub/WPAutomate/customer_names.json'
+    po_expire_file = '/Users/rian/Documents/GitHub/WPAutomate/po_expire.json'  # Change to JSON file
     
     with open(json_file, 'r') as f:
         customer_names = json.load(f)
     
     # Load po_expire.json and create a dictionary with customer names as keys and po_expire information as values
     with open(po_expire_file, 'r') as f:
-        po_expire_data = {entry['customer_name']: entry for entry in json.load(f)}
+        po_expire_data = json.load(f)
     
     query = generate_single_query(csv_file, customer_names, po_expire_data)
     
@@ -107,3 +104,5 @@ if __name__ == "__main__":
     
     os.remove(csv_file)
     print("CSV file removed.")
+
+
