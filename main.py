@@ -15,7 +15,7 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
     fat_start_values = []
     fat_finish_values = []
 
-    for row in df.iterrows():
+    for index, row in df.iterrows():
         order_time = np.datetime64(row['order_date'])
 
         no_PO = '' if isinstance(row['no_PO'], float) and math.isnan(row['no_PO']) else row['no_PO']
