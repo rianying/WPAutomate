@@ -22,7 +22,7 @@ def add_business_days(start_date, num_days):
 
 # Generate a single SQL UPDATE query using CASE statement with new lines for each entry
 update_cases = []
-with open('expired.csv', 'r') as sql_fetched_file:
+with open('updateexpire.csv', 'r') as sql_fetched_file:
     sql_fetched_reader = csv.DictReader(sql_fetched_file)
     for row in sql_fetched_reader:
         customer_name = row['customer_name']
@@ -44,6 +44,6 @@ if update_cases:
 
     print("Single transaction with a CASE statement (with new lines for entries) has been generated and copied to the clipboard.")
     print("You can now paste the transaction wherever you need.")
-    os.remove('expired.csv')
+    os.remove('updateexpire.csv')
 else:
     print("No eligible records found in the input data.")

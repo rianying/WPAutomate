@@ -23,6 +23,15 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
         
         customer_number = row['customer_number']
         customer_name = customer_names.get(str(customer_number), '')
+
+        if customer_name == '':
+            customer_name = input(f"Enter customer name for customer number {customer_number}: ")
+
+            if customer_name not in customer_names.values():
+                customer_names[str(customer_number)] = customer_name
+                with open(json_file, 'w') as f:
+                    json.dump(customer_names, f, indent=4)
+                print(f"Added '{customer_name}' for customer number {customer_number} in customer_names.json")
         
         if 'SF' in no_SO:
             fat_random_minutes = random.randint(1, 10)
@@ -104,5 +113,3 @@ if __name__ == "__main__":
     
     os.remove(csv_file)
     print("CSV file removed.")
-
-
