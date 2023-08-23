@@ -31,12 +31,12 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
                 customer_names[str(customer_number)] = customer_name
                 with open(json_file, 'w') as f:
                     json.dump(customer_names, f, indent=4)
-                print(f"Added '{customer_name}' for customer number {customer_number} in customer_names.json")
+                print(f"\nAdded '{customer_name}' for customer number {customer_number} in customer_names.json")
 
                 po_expire_data[customer_name] = 4
                 with open(po_expire_file, 'w') as f:
                     json.dump(po_expire_data, f, indent=4)
-                print(f"Updated po_expire.json with default value for '{customer_name}'")
+                print(f"\nUpdated po_expire.json with default value for '{customer_name}'")
         
         if 'SF' in no_SO:
             fat_random_minutes = random.randint(1, 10)
