@@ -38,7 +38,7 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
                     json.dump(po_expire_data, f, indent=4)
                 print(f"\nUpdated po_expire.json with default value for '{customer_name}'")
         
-        if 'SF' in no_SO:
+        if 'SO' in no_SO:
             fat_random_minutes = random.randint(1, 10)
             fat_start_time = (pd.to_datetime(order_time) + pd.Timedelta(minutes=fat_random_minutes)).strftime('%Y-%m-%d %H:%M:%S')
             fat_finish_time = (pd.to_datetime(fat_start_time) + pd.Timedelta(minutes=fat_random_minutes)).strftime('%Y-%m-%d %H:%M:%S')

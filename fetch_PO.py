@@ -26,7 +26,7 @@ def process_csv(data):
     
     start_range = input("Please enter the start of the NO. SO range (press Enter to fetch all): ").upper()
     if start_range:
-        finish_range = input("Please enter the finish of the NO. SO range: ").upper()
+        finish_range = start_range.replace(start_range[-4:], "9999")
         result_df = df[df['no_SO'].between(start_range, finish_range)]
     else:
         result_df = df
