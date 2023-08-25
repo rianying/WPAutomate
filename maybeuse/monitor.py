@@ -62,7 +62,7 @@ while True:
                     new_entry_time = ot
                     break
 
-            print(f"New entry added at Row: {current_last_row}, Segment: {new_entry_segment} - {new_entry_so}. Order time: {new_entry_time}")
+            print(f"\n\nNew entry added at Row: {current_last_row}, Segment: {new_entry_segment} - {new_entry_so}. Order time: {new_entry_time}\n\n")
 
             # Send a WhatsApp message using Twilio
             message = twilio_client.messages.create(
