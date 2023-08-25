@@ -17,8 +17,8 @@ def process_csv(data):
         "Mei": "May", "Jun": "Jun", "Jul": "Jul", "Agu": "Aug",
         "Sep": "Sep", "Okt": "Oct", "Nov": "Nov", "Des": "Dec"
     }
-    for non_eng, eng in month_translations.items():
-        df["order_date"] = df["order_date"].str.replace(non_eng, eng)
+    for ind, eng in month_translations.items():
+        df["order_date"] = df["order_date"].str.replace(ind, eng)
     
     time_input = input("Please enter the time (format HH:MM:SS): ")
     df["order_date"] = pd.to_datetime(df["order_date"], format='%d %b %Y') 
