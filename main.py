@@ -25,7 +25,7 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
         customer_name = customer_names.get(str(customer_number), '')
 
         if customer_name == '':
-            customer_name = input(f"Enter customer name for customer number {customer_number}: ")
+            customer_name = input(f"Enter customer name for {no_SO}: ")
 
             if customer_name not in customer_names.values():
                 customer_names[str(customer_number)] = customer_name
@@ -38,7 +38,7 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
                     json.dump(po_expire_data, f, indent=4)
                 print(f"\nUpdated po_expire.json with default value for '{customer_name}'")
         
-        if 'SO' in no_SO:
+        if 'SF' in no_SO:
             fat_random_minutes = random.randint(1, 10)
             fat_start_time = (pd.to_datetime(order_time) + pd.Timedelta(minutes=fat_random_minutes)).strftime('%Y-%m-%d %H:%M:%S')
             fat_finish_time = (pd.to_datetime(fat_start_time) + pd.Timedelta(minutes=fat_random_minutes)).strftime('%Y-%m-%d %H:%M:%S')
