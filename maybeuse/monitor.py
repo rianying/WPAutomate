@@ -65,11 +65,11 @@ while True:
             print(f"\n\nNew entry added at Row: {current_last_row}, Segment: {new_entry_segment} - {new_entry_so}. Order time: {new_entry_time}\n\n")
 
             # Send a WhatsApp message using Twilio
-            message = twilio_client.messages.create(
-                from_=twilio_phone_number,
-                body=f"New entry added: {new_entry_segment} - {new_entry_so}. Order time: {new_entry_time} at Row: {current_last_row}.\n\nCheck it now: {spreadsheet_url}",
-                to=to_phone_number
-            )
+            # message = twilio_client.messages.create(
+            #     from_=twilio_phone_number,
+            #     body=f"New entry added: {new_entry_segment} - {new_entry_so}. Order time: {new_entry_time} at Row: {current_last_row}.\n\nCheck it now: {spreadsheet_url}",
+            #     to=to_phone_number
+            # )
 
             last_row = current_last_row
         else:
