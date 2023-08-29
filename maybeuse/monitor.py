@@ -11,7 +11,7 @@ def handle_exit(sig, frame):
     sys.exit(0)
 
 #Load sensitive credentials from twilio.json
-with open('twilio.json') as json_file:
+with open('twillio.json') as json_file:
     credentials = json.load(json_file)
 
 twilio_account_sid = credentials['twilio_account_sid']
