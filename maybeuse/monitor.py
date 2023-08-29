@@ -10,7 +10,7 @@ def handle_exit(sig, frame):
     print("\nProgram exited")
     sys.exit(0)
 
-# Load sensitive credentials from twilio.json
+#Load sensitive credentials from twilio.json
 with open('twilio.json') as json_file:
     credentials = json.load(json_file)
 
@@ -18,7 +18,7 @@ twilio_account_sid = credentials['twilio_account_sid']
 twilio_auth_token = credentials['twilio_auth_token']
 twilio_phone_number = credentials['twilio_phone_number']
 to_phone_number = credentials['to_phone_number']
-spreadsheet_url = credentials['spreadsheet_url']
+spreadsheet_url = credentials['url']
 
 # Load Google Sheets API credentials from credentials.json
 credentials_file = 'credentials.json'
@@ -64,12 +64,12 @@ while True:
 
             print(f"\n\nNew entry added at Row: {current_last_row}, Segment: {new_entry_segment} - {new_entry_so}. Order time: {new_entry_time}\n\n")
 
-            # Send a WhatsApp message using Twilio
-            # message = twilio_client.messages.create(
-            #     from_=twilio_phone_number,
-            #     body=f"New entry added: {new_entry_segment} - {new_entry_so}. Order time: {new_entry_time} at Row: {current_last_row}.\n\nCheck it now: {spreadsheet_url}",
-            #     to=to_phone_number
-            # )
+            #Send a WhatsApp message using Twilio
+            message = twilio_client.messages.create(
+                from_=twilio_phone_number,
+                body=f"New entry added: {new_entry_segment} - {new_entry_so}. Order time: {new_entry_time} at Row: {current_last_row}.\n\nCheck it now: {spreadsheet_url}",
+                to=to_phone_number
+            )
 
             last_row = current_last_row
         else:
