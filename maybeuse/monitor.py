@@ -75,7 +75,7 @@ while True:
         else:
             print('No new entry found. Last checked row: {} with the value of {} - {}. Order time: {}'.format(last_row, new_entry_segment, new_entry_so, new_entry_time))
 
-        time.sleep(5)  # Check every 5 seconds
+        time.sleep(60)  # Check every minute
 
     except KeyboardInterrupt:
         handle_exit(None, None)  # Handle Ctrl+C
