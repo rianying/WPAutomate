@@ -5,6 +5,7 @@ from twilio.rest import Client
 import signal
 import sys
 import json
+from datetime import datetime
 
 def handle_exit(sig, frame):
     print("\nProgram exited")
@@ -43,6 +44,8 @@ while True:
     try:
         # Get the current last row value
         current_last_row = len(sheet.get_all_values())
+        now = datetime.now()
+        current_time = now.strftime("%H:%M:%S")
 
         # Check for new entries
         if current_last_row > last_row:
@@ -62,7 +65,7 @@ while True:
                     new_entry_time = ot
                     break
 
-            print(f"\n\nNew entry found and added to Row: {current_last_row}, Segment: {new_entry_segment} - {new_entry_so}. Order time: {new_entry_time}\n\n")
+            print(f"\nTime: {current_time}\nNew entry found and added to Row: {current_last_row}, Segment: {new_entry_segment} - {new_entry_so}. Order time: {new_entry_time}\n\n")
 
             #Send a WhatsApp message using Twilio
             message = twilio_client.messages.create(
@@ -73,7 +76,7 @@ while True:
 
             last_row = current_last_row
         else:
-            print('No new entry found. Last checked row: {} with the value of {} - {}. Order time: {}'.format(last_row, new_entry_segment, new_entry_so, new_entry_time))
+            print('Time: {}\nNo new entry found. Last checked row: {} with the value of {} - {}. Order time: {}'.format(current_time,last_row, new_entry_segment, new_entry_so, new_entry_time))
 
         time.sleep(60)  # Check every minute
 
