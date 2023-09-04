@@ -69,11 +69,13 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
             )
             fat_finish_values.append(fat_finish_value)
         else:
+            p_expire_value = po_expire_data.get(customer_name, 4)  # Default to 4 days if not found
+            p_expire = order_time + np.timedelta64(p_expire_value, 'D')
             pre_order_values = (
                 "('{}', '{}', '{}', '{}', '{}')".format(
                     no_PO, no_SO, customer_name,
                     np.datetime_as_string(order_time, unit='s').replace('T', ' '),
-                    np.datetime_as_string(order_time, unit='s').replace('T', ' ')
+                    np.datetime_as_string(p_expire, unit='s').replace('T', ' ')
                 )
             )
             preorder_query_values.append(pre_order_values)
