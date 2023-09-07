@@ -76,9 +76,9 @@ while True:
 
             last_row = current_last_row
         else:
-            print('Time: {}\nNo new entry found. Last checked row: {} with the value of {} - {}. Order time: {}'.format(current_time,last_row, new_entry_segment, new_entry_so, new_entry_time))
+            print('\nTime: {}\nNo new entry found. Last checked row: {} with the value of {} - {}. Order time: {}'.format(current_time,last_row, new_entry_segment, new_entry_so, new_entry_time))
 
-        time.sleep(60)  # Check every minute
+        time.sleep(120)  # Check every 2 minute
 
     except KeyboardInterrupt:
         handle_exit(None, None)  # Handle Ctrl+C
