@@ -6,6 +6,7 @@ def clean(input_file, output_file):
     data.rename(columns={'Tgl Pesan': 'order_date', 'Unnamed: 2': 'no_SO', 'No. Pesanan': 'customer_number', 'Unnamed: 4': 'customer_name', 'Unnamed: 6': 'no_PO'}, inplace=True)
     selected = data[['order_date', 'no_PO', 'no_SO', 'customer_number']]
     cleaned = selected[selected['no_SO'].notna()]
+    #cleaned['segment'] = cleaned['no_SO'].str.split('/').str[2]
     cleaned.to_csv(output_file, index=False)
     print(f'{input_file} has been cleaned and saved as {output_file}!')
 
@@ -24,7 +25,9 @@ def process_csv(data):
     df["order_date"] = pd.to_datetime(df["order_date"], format='%d %b %Y') 
     df["order_date"] = df["order_date"].dt.strftime('%Y-%m-%d') + ' ' + time_input
     
-    start_range = input("Please enter the start of the NO. SO range (press Enter to fetch all): ").upper()
+    segment = input("Please enter the segment: ").upper()
+    startcode = input("Please enter the start code: ")
+    start_range = f"SO/SMR/{segment}/23/IX/{startcode}".upper()
     if start_range:
         finish_range = start_range.replace(start_range[-4:], "9999")
         result_df = df[df['no_SO'].between(start_range, finish_range)]

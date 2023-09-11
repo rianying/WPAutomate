@@ -17,8 +17,10 @@ balikanSAT = pd.DataFrame(columns=['Tanggal', 'Nomor Dokumen', 'Nama Customer', 
 
 # Continue asking for user input until 'done' is entered
 while True:
-    user_input = input("Enter the last 4 digits of no_SJ (or nothing to exit): ")
-
+    user_input = input("4 Digit terakhir Nomor SJ (kosongkan apabila selesai): ")
+    if len(user_input) >= 1 and len(user_input) < 4:
+        print("Nomor SJ harus 4 digit.")
+        continue
     # Check if the user wants to exit
     if user_input.lower() == '':
         break
@@ -46,7 +48,7 @@ while True:
         # Fill the 'transformed_data' list for no_PO
         transformed_data.append([today_date, None, customer_name, 'BPB', 1])
     else:
-        print(f"No matching record found for input '{user_input}'.")
+        print(f"Tidak ada nomor SJ: '{user_input}'.")
 
 # Create a new DataFrame from the transformed data
 transformed_df = pd.DataFrame(transformed_data, columns=['Tanggal', 'Nomor Dokumen', 'Nama Customer', 'Jenis dokumen', 'Jumlah Lembar'])

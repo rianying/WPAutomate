@@ -17,7 +17,10 @@ balikanSAT = pd.DataFrame(columns=['Tanggal', 'Nomor Dokumen', 'Nama Customer', 
 
 # Continue asking for user input until 'done' is entered
 while True:
-    user_input = input("Enter the last 4 digits of no_SJ (or nothing to exit): ")
+    user_input = input("4 Digit terakhir Nomor SJ (Kosongkan apabila selesai): ")
+    if len(user_input) >= 1 and len(user_input) < 4:
+        print("Nomor SJ harus 4 digit.")
+        continue
 
     # Check if the user wants to exit
     if user_input.lower() == '':
