@@ -4,7 +4,7 @@ import subprocess
 import os
 
 # Read the original CSV file
-df = pd.read_csv('/Users/rian/Documents/GitHub/WPAutomate/sat.csv', sep=',')
+df = pd.read_csv('/Users/rian/Documents/GitHub/WPAutomate/depo.csv', sep=',')
 
 # Create an empty list to store the transformed data
 transformed_data = []
@@ -17,14 +17,15 @@ balikanSAT = pd.DataFrame(columns=['Tanggal', 'Nomor Dokumen', 'Nama Customer', 
 
 # Continue asking for user input until 'done' is entered
 while True:
-    user_input = input("4 Digit terakhir Nomor SJ (kosongkan apabila selesai): ")
+    user_input = input("4 Digit terakhir Nomor SJ (Kosongkan apabila selesai): ")
     if len(user_input) >= 1 and len(user_input) < 4:
         print("Nomor SJ harus 4 digit.")
         continue
+
     # Check if the user wants to exit
     if user_input.lower() == '':
-        os.remove('/Users/rian/Documents/GitHub/WPAutomate/sat.csv')
-        print('File sat.csv deleted.')
+        os.remove('/Users/rian/Documents/GitHub/WPAutomate/depo.csv')
+        print('File depo.csv deleted.')
         break
 
     # Determine if user input has ' at the end
@@ -34,23 +35,18 @@ while True:
     last_4_digits = user_input.rstrip("'")
 
     # Find the relevant row in the CSV based on the user input
-    matching_row = df[df['no_SJ'].str.endswith(last_4_digits)]
+    matching_row = df[df['No_SJ'].str.endswith(last_4_digits)]
 
     if not matching_row.empty:
         # Fill the 'transformed_data' list for no_SJ
-        no_sj = matching_row['no_SJ'].values[0]
-        customer_name = matching_row['customer_name'].values[0]
-        transformed_data.append([today_date, no_sj, customer_name, 'SJ', 1])
-
+        no_sj = matching_row['No_SJ'].values[0]
+        customer_name = matching_row['customer'].values[0]
+        transformed_data.append([today_date, no_sj, customer_name, 'SJ', 2])
+        
         if has_suffix:
-            # User input without ' at the end, add a PO row
-            no_po = matching_row['no_PO'].values[0]
-            transformed_data.append([today_date, no_po, customer_name, 'PO', 1])
-
-        # Fill the 'transformed_data' list for no_PO
-        transformed_data.append([today_date, None, customer_name, 'BPB', 1])
+            transformed_data.append([today_date, None, customer_name, 'Faktur', 1])
     else:
-        print(f"Tidak ada nomor SJ: '{user_input}'.")
+        print(f"No matching record found for input '{user_input}'.")
 
 # Create a new DataFrame from the transformed data
 transformed_df = pd.DataFrame(transformed_data, columns=['Tanggal', 'Nomor Dokumen', 'Nama Customer', 'Jenis dokumen', 'Jumlah Lembar'])

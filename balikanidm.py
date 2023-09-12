@@ -24,6 +24,8 @@ while True:
 
     # Check if the user wants to exit
     if user_input.lower() == '':
+        os.remove('/Users/rian/Documents/GitHub/WPAutomate/idm.csv')
+        print('File idm.csv deleted.')
         break
 
     # Determine if user input has ' at the end
