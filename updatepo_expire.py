@@ -6,7 +6,7 @@ import os
 
 # Read po_expire.csv and create a dictionary of customer names and corresponding po_expire values
 po_expire_data = {}
-with open('po_expire.csv', 'r') as po_expire_file:
+with open('/Users/rian/Documents/GitHub/WPAutomate/po_expire.csv', 'r') as po_expire_file:
     po_expire_reader = csv.DictReader(po_expire_file)
     for row in po_expire_reader:
         po_expire_data[row['customer_name']] = int(row['po_expire'])

@@ -4,7 +4,7 @@ import subprocess
 import os
 
 # Read the original CSV file
-df = pd.read_csv('balikansf.csv')
+df = pd.read_csv('/Users/rian/Documents/GitHub/WPAutomate/balikansf.csv')
 
 # Create an empty list to store the transformed data
 transformed_data = []
@@ -36,7 +36,7 @@ clipboard_content = transformed_df.to_csv(index=False, sep='\t')
 
 # Copy the content to clipboard using subprocess
 subprocess.run(['pbcopy'], input=clipboard_content.encode('utf-8'))
-os.remove('balikansf.csv')
+os.remove('/Users/rian/Documents/GitHub/WPAutomate/balikansf.csv')
 
 print("DataFrame content copied to clipboard.")
 print("balikansf.csv removed.")

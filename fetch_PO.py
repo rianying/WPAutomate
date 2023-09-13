@@ -34,7 +34,7 @@ def process_csv(data):
     else:
         result_df = df
     
-    output_file = 'PO_fetched.csv'
+    output_file = '/Users/rian/Documents/GitHub/WPAutomate/PO_fetched.csv'
     result_df.to_csv(output_file, index=False)
     print(f'{output_file} has been generated.')
 

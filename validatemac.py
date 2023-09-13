@@ -54,7 +54,7 @@ def copy_to_clipboard(text):
     process.communicate(text.encode('utf-8'))
 
 if __name__ == "__main__":
-    csv_file_path = "CheckPO.csv"  # Replace this with the actual path of your CSV file
+    csv_file_path = '/Users/rian/Documents/GitHub/WPAutomate/maybeuse/CheckPO.csv'  # Replace this with the actual path of your CSV file
 
     try:
         queries_order_checking_start, queries_order_checking_finish = generate_queries(csv_file_path)
