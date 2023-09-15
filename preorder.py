@@ -114,11 +114,12 @@ if __name__ == "__main__":
     with open(po_expire_file, 'r') as f:
         po_expire_data = json.load(f)
     
-    query = generate_single_query(csv_file, customer_names, po_expire_data)
-    
-    copy_to_clipboard(query)
     if os.path.exists(csv_file):
-        os.remove(csv_file)
-        print("CSV file removed.")
-    else:
-        print(f"CSV file '{csv_file}' does not exist.")
+        query = generate_single_query(csv_file, customer_names, po_expire_data)
+        
+        copy_to_clipboard(query)
+        if os.path.exists(csv_file):
+            os.remove(csv_file)
+            print("CSV file removed.")
+        else:
+            print(f"CSV file '{csv_file}' does not exist.")

@@ -54,23 +54,21 @@ def copy_to_clipboard(text):
     process.communicate(text.encode('utf-8'))
 
 if __name__ == "__main__":
-    csv_file_path = '/Users/rian/Documents/GitHub/WPAutomate/maybeuse/CheckPO.csv'  # Replace this with the actual path of your CSV file
-
-    try:
-        queries_order_checking_start, queries_order_checking_finish = generate_queries(csv_file_path)
-        queries_combined = f"{queries_order_checking_start}\n\n{queries_order_checking_finish}"
-
-        # Copy to clipboard
-        copy_to_clipboard(queries_combined)
-
-        print("Generated SQL Queries have been copied to the clipboard!")
+    csv_file_path = '/Users/rian/Documents/GitHub/WPAutomate/CheckPO.csv'  # Replace this with the actual path of your CSV file
 
         # Delete the CSV file
-        if os.path.exists(csv_file_path):
+    if os.path.exists(csv_file_path):
+        try:
+            queries_order_checking_start, queries_order_checking_finish = generate_queries(csv_file_path)
+            queries_combined = f"{queries_order_checking_start}\n\n{queries_order_checking_finish}"
+
+                # Copy to clipboard
+            copy_to_clipboard(queries_combined)
+
+            print("Generated SQL Queries have been copied to the clipboard!")
             os.remove(csv_file_path)
             print(f"\n{csv_file_path} has been deleted.")
-        else:
-            print(f"\n{csv_file_path} does not exist.")
-
-    except Exception as e:
-        print("Error:", str(e))
+        except Exception as e:
+            print("Error:", str(e))
+    else:
+        print(f"\n{csv_file_path} does not exist.")

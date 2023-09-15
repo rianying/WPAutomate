@@ -38,12 +38,17 @@ def process_csv(data):
     result_df.to_csv(output_file, index=False)
     print(f'{output_file} has been generated.')
 
-input_file = r'/Volumes/PUBLIC/SC - Samuel (Intern)/SO.csv'
+input_file = r'/Volumes/PUBLIC/SC - RIAN (Intern)/SO.csv'
 cleaned_file = '/Users/rian/Documents/GitHub/WPAutomate/SO_cleaned.csv'
-clean(input_file, cleaned_file)
 
-cleaned_data = pd.read_csv(cleaned_file)
-process_csv(cleaned_data)
-
-os.remove(cleaned_file)
-print(f'{cleaned_file} has been removed.')
+if os.path.exists(input_file):
+    try:
+        clean(input_file, cleaned_file)
+        cleaned_data = pd.read_csv(cleaned_file)
+        process_csv(cleaned_data)
+        os.remove(cleaned_file)
+        print(f'{cleaned_file} has been removed.')
+    except Exception as e:
+        print(f'\n\nError: {e}')
+else:
+    print(f'\n\nSO File not found. Please check if the file exists in {input_file}')

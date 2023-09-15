@@ -21,9 +21,10 @@ def list_scripts():
         "balikandepo.py",
     ]
 
-    print("Which script do you want to run?")
+    print("\n\nWhich script do you want to run?")
     for i, script_name in enumerate(script_names, start=1):
         print(f"{i}. {script_name[:-3]}")
+    print('\n')
 
 def run_script(script_name):
     try:
