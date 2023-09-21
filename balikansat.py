@@ -46,7 +46,7 @@ def process_data(df):
             transformed_data.append([today_date, no_sj, customer_name, 'SJ', 1])
 
             if has_suffix:
-                # User input without ' at the end, add a PO row
+                # User input witH ' at the end, add a PO row
                 no_po = matching_row['no_PO'].values[0]
                 transformed_data.append([today_date, no_po, customer_name, 'PO', 1])
 
