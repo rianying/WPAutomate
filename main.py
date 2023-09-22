@@ -1,14 +1,6 @@
 import pandas as pd
 import numpy as np
-from datetime import datetime, timedelta
-import math
 import subprocess
-import os
-import json
-import random
-import pyperclip
-import sys
-import shutil
 
 def list_scripts():
     script_names = [
