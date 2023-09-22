@@ -16,7 +16,7 @@ def process_data(df):
 
     # Continue asking for user input until 'done' is entered
     while True:
-        user_input = input("4 Digit terakhir Nomor SJ (Kosongkan apabila selesai): ")
+        user_input = input("4 Digit terakhir Nomor SJ (Kosongkan apabila selesai, tambahkan koma atas apabila Invoice): ")
         if len(user_input) >= 1 and len(user_input) < 4:
             print("Nomor SJ harus 4 digit.")
             continue
@@ -37,10 +37,17 @@ def process_data(df):
         matching_row = df[df['No_SJ'].str.endswith(last_4_digits)]
 
         if not matching_row.empty:
-            # Fill the 'transformed_data' list for no_SJ
-            no_sj = matching_row['No_SJ'].values[0]
-            customer_name = matching_row['customer'].values[0]
-            transformed_data.append([today_date, no_sj, customer_name, 'SJ', 2])
+            if not has_suffix:
+                # Fill the 'transformed_data' list for no_SJ
+                no_sj = matching_row['No_SJ'].values[0]
+                no_inv = no_sj.replace('SJ', 'INV')
+                customer_name = matching_row['customer'].values[0]
+                transformed_data.append([today_date, no_sj, customer_name, 'SJ', 2])
+            else:
+                no_sj = matching_row['No_SJ'].values[0]
+                no_inv = no_sj.replace('SJ', 'INV')
+                customer_name = matching_row['customer'].values[0]
+                transformed_data.append([today_date, no_inv, customer_name, 'INV', 4])
         else:
             print(f"No matching record found for input '{user_input}'.")
 

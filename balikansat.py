@@ -20,7 +20,7 @@ def process_data(df):
 
     # Continue asking for user input until 'done' is entered
     while True:
-        user_input = input("4 Digit terakhir Nomor SJ (kosongkan apabila selesai): ")
+        user_input = input("4 Digit terakhir Nomor SJ (kosongkan apabila selesai, koma atas apabila ada PO): ")
         if len(user_input) >= 1 and len(user_input) < 4:
             print("Nomor SJ harus 4 digit.")
             continue

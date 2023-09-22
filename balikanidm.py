@@ -16,7 +16,7 @@ balikanSAT = pd.DataFrame(columns=['Tanggal', 'Nomor Dokumen', 'Nama Customer', 
 # Continue asking for user input until 'done' is entered
 def process_user_input(df):
     transformed_data = []
-    today_date = datetime.date.today()
+    today_date = datetime.now().strftime('%Y-%m-%d')
     
     while True:
         user_input = input("4 Digit terakhir Nomor SJ (Kosongkan apabila selesai): ")
