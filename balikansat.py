@@ -20,9 +20,9 @@ def process_data(df):
 
     # Continue asking for user input until 'done' is entered
     while True:
-        user_input = input("4 Digit terakhir Nomor SJ (kosongkan apabila selesai, koma atas apabila ada PO): ")
+        user_input = input("4 Digit terakhir Nomor SO (kosongkan apabila selesai, koma atas apabila ada PO): ")
         if len(user_input) >= 1 and len(user_input) < 4:
-            print("Nomor SJ harus 4 digit.")
+            print("Nomor SO harus 4 digit.")
             continue
         # Check if the user wants to exit
         if user_input.lower() == '':
@@ -37,11 +37,12 @@ def process_data(df):
         last_4_digits = user_input.rstrip("'")
 
         # Find the relevant row in the CSV based on the user input
-        matching_row = df[df['no_SJ'].str.endswith(last_4_digits)]
+        matching_row = df[df['no_SO'].str.endswith(last_4_digits)]
 
         if not matching_row.empty:
             # Fill the 'transformed_data' list for no_SJ
-            no_sj = matching_row['no_SJ'].values[0]
+            no_sj = matching_row['no_SO'].values[0]
+            no_SO = no_sj.replace("SJ", "SO")
             customer_name = matching_row['customer_name'].values[0]
             transformed_data.append([today_date, no_sj, customer_name, 'SJ', 1])
 
@@ -53,7 +54,7 @@ def process_data(df):
             # Fill the 'transformed_data' list for no_PO
             transformed_data.append([today_date, None, customer_name, 'BPB', 1])
         else:
-            print(f"Tidak ada nomor SJ: '{user_input}'.")
+            print(f"Tidak ada nomor SO: '{user_input}'.")
 
     # Create a new DataFrame from the transformed data
     transformed_df = pd.DataFrame(transformed_data, columns=['Tanggal', 'Nomor Dokumen', 'Nama Customer', 'Jenis dokumen', 'Jumlah Lembar'])
