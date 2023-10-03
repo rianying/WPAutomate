@@ -27,7 +27,7 @@ def process_csv(data):
     
     segment = input("Please enter the segment: ").upper()
     startcode = input("Please enter the start code: ")
-    start_range = f"SO/SMR/{segment}/23/IX/{startcode}".upper()
+    start_range = f"SO/SMR/{segment}/23/X/{startcode}".upper()
     if start_range:
         finish_range = start_range.replace(start_range[-4:], "9999")
         result_df = df[df['no_SO'].between(start_range, finish_range)]
