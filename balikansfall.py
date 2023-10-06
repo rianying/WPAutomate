@@ -43,6 +43,7 @@ def process_data(df):
                 no_inv = no_sj.replace('SJ', 'INV')
                 customer_name = matching_row['customer'].values[0]
                 transformed_data.append([today_date, no_sj, customer_name, 'SJ', 2])
+                transformed_data.append([today_date, no_inv, customer_name, 'INV', 2])
             else:
                 no_sj = matching_row['No_SJ'].values[0]
                 no_inv = no_sj.replace('SJ', 'INV')
