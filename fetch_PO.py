@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import json
 
 def clean(input_file, output_file):
     data = pd.read_csv(input_file, sep=';', skiprows=4)
@@ -21,22 +22,51 @@ def process_csv(data):
     for ind, eng in month_translations.items():
         df["order_date"] = df["order_date"].str.replace(ind, eng)
     
-    time_input = input("Please enter the time (format HH:MM:SS): ")
+    time_input = pd.Timestamp.now().strftime('%H:%M:%S')
     df["order_date"] = pd.to_datetime(df["order_date"], format='%d %b %Y') 
     df["order_date"] = df["order_date"].dt.strftime('%Y-%m-%d') + ' ' + time_input
     
-    segment = input("Please enter the segment: ").upper()
-    startcode = input("Please enter the start code: ")
-    start_range = f"SO/SMR/{segment}/23/X/{startcode}".upper()
-    if start_range:
-        finish_range = start_range.replace(start_range[-4:], "9999")
-        result_df = df[df['no_SO'].between(start_range, finish_range)]
-    else:
-        result_df = df
+    # Load segment and start code from JSON file
+    with open("/Users/rian/Documents/GitHub/WPAutomate/startcode.json", 'r') as file:
+        segments_startcodes = json.load(file)
     
-    output_file = '/Users/rian/Documents/GitHub/WPAutomate/PO_fetched.csv'
-    result_df.to_csv(output_file, index=False)
+    # Initialize an empty DataFrame to store results for all segments
+    all_results_df = pd.DataFrame()
+    
+    # Process each segment and start code
+    for segment, startcode in segments_startcodes.items():
+        try:
+            start_range = f"SO/SMR/{segment}/23/X/{startcode}".upper()
+            finish_range = start_range.replace(start_range[-4:], "9999")
+            result_df = df[df['no_SO'].between(start_range, finish_range)]
+            
+            # Check if result_df is empty
+            if result_df.empty:
+                print(f"No new orders found for segment: {segment}. Skipping...")
+                continue
+            
+            # Concatenate the results for this segment to the overall results DataFrame
+            all_results_df = pd.concat([all_results_df, result_df])
+
+            # Update the start code for this segment in the JSON file
+            # Extract the used codes from 'no_SO' and convert them to integers
+            used_codes = result_df['no_SO'].apply(lambda x: int(x.split("/")[-1]))
+            # Find the maximum used code
+            max_used_code = used_codes.max()
+            # Update the start code to be the maximum used code + 1, formatted with leading zeros
+            segments_startcodes[segment] = str(max_used_code + 1).zfill(len(startcode))
+            
+        except Exception as e:
+            print(f"An error occurred while processing segment: {segment}. Error: {str(e)}. Skipping...")
+            continue
+    
+    # Save the concatenated results to a single CSV file
+    output_file = 'PO_fetched.csv'
+    all_results_df.to_csv(output_file, index=False)
     print(f'{output_file} has been generated.')
+
+    with open("/Users/rian/Documents/GitHub/WPAutomate/startcode.json", 'w') as file:
+        json.dump(segments_startcodes, file)
 
 input_file = r'/Volumes/PUBLIC/SC - RIAN (Intern)/SO.csv'
 cleaned_file = '/Users/rian/Documents/GitHub/WPAutomate/SO_cleaned.csv'
