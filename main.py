@@ -6,7 +6,6 @@ def list_scripts():
     script_names = [
         "preorder.py",
         "validatemac.py",
-        "balikansf.py",
         "balikansfall.py",
         "balikansat.py",
         "balikanidm.py",
@@ -35,7 +34,6 @@ if __name__ == "__main__":
             script_names = [
                 "preorder.py",
                 "validatemac.py",
-                "balikansf.py",
                 "balikansfall.py",
                 "balikansat.py",
                 "balikanidm.py",
