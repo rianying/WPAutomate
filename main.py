@@ -4,7 +4,6 @@ import subprocess
 
 def list_scripts():
     script_names = [
-        "preorder.py",
         "validatemac.py",
         "balikansfall.py",
         "balikansat.py",
@@ -32,7 +31,6 @@ if __name__ == "__main__":
             if choice == 0:
                 break
             script_names = [
-                "preorder.py",
                 "validatemac.py",
                 "balikansfall.py",
                 "balikansat.py",

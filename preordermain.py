@@ -6,6 +6,7 @@ import subprocess
 import random
 from datetime import datetime, timedelta
 import math
+import time
 
 # Functions from fetch_PO.py
 
@@ -78,8 +79,14 @@ def process_csv(data):
 # Functions from preorder.py
 
 def generate_single_query(csv_file, customer_names, po_expire_data):
-    df = pd.read_csv(csv_file)
-
+    try:
+        df = pd.read_csv(csv_file)
+    except pd.errors.EmptyDataError:
+        print("No new orders found.")
+        os.remove(input_file)
+        print("SO file removed.")
+        return None
+    
     preorder_query_values = []
     fat_start_values = []
     fat_finish_values = []
@@ -172,21 +179,7 @@ def copy_to_clipboard(text):
         print("Error copying to clipboard.")
 
 if __name__ == "__main__":
-    input_file = r'/Volumes/PUBLIC/SC - RIAN (Intern)/SO.csv'
     cleaned_file = '/Users/rian/Documents/GitHub/WPAutomate/SO_cleaned.csv'
-    
-    if os.path.exists(input_file):
-        try:
-            clean(input_file, cleaned_file)
-            cleaned_data = pd.read_csv(cleaned_file)
-            process_csv(cleaned_data)
-            os.remove(cleaned_file)
-            print(f'{cleaned_file} has been removed.')
-        except Exception as e:
-            print(f'\n\nError: {e}')
-    else:
-        print(f'\n\nSO File not found. Please check if the file exists in {input_file}')
-    
     csv_file = '/Users/rian/Documents/GitHub/WPAutomate/PO_fetched.csv'
     json_file = '/Users/rian/Documents/GitHub/WPAutomate/customer_names.json'
     po_expire_file = '/Users/rian/Documents/GitHub/WPAutomate/po_expire.json'
@@ -196,11 +189,37 @@ if __name__ == "__main__":
     
     with open(po_expire_file, 'r') as f:
         po_expire_data = json.load(f)
+
+    try:
+        while True:
+            input_file = r'/Volumes/PUBLIC/SC - RIAN (Intern)/1.csv'
+
+            if os.path.exists(input_file):
+                try:
+                    clean(input_file, cleaned_file)
+                    cleaned_data = pd.read_csv(cleaned_file)
+                    process_csv(cleaned_data)
+                    os.remove(cleaned_file)
+                    print(f'{cleaned_file} has been removed.')
+                except Exception as e:
+                    print(f'\n\nError: {e}')
+            
+                if os.path.exists(csv_file):
+                    query = generate_single_query(csv_file, customer_names, po_expire_data)
+                    if query is not None:
+                        copy_to_clipboard(query)
+                        os.remove(csv_file)
+                        print("CSV file removed.")
+                        os.remove(input_file)
+                        print("SO file removed.")
+                else:
+                    print(f"CSV file '{csv_file}' does not exist.")
+            else:
+                print("No new SO")
+
+            time.sleep(20)
     
-    if os.path.exists(csv_file):
-        query = generate_single_query(csv_file, customer_names, po_expire_data)
-        copy_to_clipboard(query)
-        os.remove(csv_file)
-        print("CSV file removed.")
-    else:
-        print(f"CSV file '{csv_file}' does not exist.")
+    except KeyboardInterrupt:
+        print("\nExiting the script. Goodbye!")
+        # Here, you might perform any cleanup operations or save logs before exiting.
+
