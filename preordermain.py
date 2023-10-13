@@ -215,7 +215,7 @@ if __name__ == "__main__":
                 else:
                     print(f"CSV file '{csv_file}' does not exist.")
             else:
-                print("No new SO")
+                print("No new SO\n")
 
             time.sleep(20)
     
