@@ -215,9 +215,12 @@ if __name__ == "__main__":
                 else:
                     print(f"CSV file '{csv_file}' does not exist.")
             else:
-                print("No new SO\n")
-
-            time.sleep(20)
+                print("No new SO")
+            #PRINT TIME NOW
+            now = datetime.now()
+            current_time = now.strftime("%H:%M:%S")
+            print("Current Time = {}\n".format(current_time))
+            time.sleep(3)
     
     except KeyboardInterrupt:
         print("\nExiting the script. Goodbye!")

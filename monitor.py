@@ -11,7 +11,7 @@ def handle_exit(sig, frame):
     print("\nProgram exited")
     sys.exit(0)
 
-#Load sensitive credentials from twilio.json
+# Load sensitive credentials from twilio.json
 with open('twillio.json') as json_file:
     credentials = json.load(json_file)
 
@@ -40,6 +40,8 @@ twilio_client = Client(twilio_account_sid, twilio_auth_token)
 # Set up the Ctrl+C signal handler
 signal.signal(signal.SIGINT, handle_exit)
 
+sleep_interval = 300  # Initial sleep interval is 5 minutes
+
 while True:
     try:
         # Get the current last row value
@@ -49,25 +51,24 @@ while True:
 
         # Check for new entries
         if current_last_row > last_row:
-            new_entry_segment = None  # Initialize with None
+            new_entry_segment = None
             new_entry_time = None
             new_entry_so = sheet.cell(current_last_row, 3).value  # Assuming 'NO SO' is in the third column
 
             for row_num in range(current_last_row, 0, -1):
                 segment = sheet.cell(row_num, 2).value
-                if segment:  # If segment is not empty, update new_entry_segment and break
+                if segment:
                     new_entry_segment = segment
                     break
             
             for row_num in range(current_last_row, 0, -1):
                 ot = sheet.cell(row_num, 4).value
-                if ot:  # If segment is not empty, update new_entry_segment and break
+                if ot:
                     new_entry_time = ot
                     break
 
             print(f"\nTime: {current_time}\nNew entry found and added to Row: {current_last_row}, Segment: {new_entry_segment} - {new_entry_so}. Order time: {new_entry_time}\n\n")
 
-            #Send a WhatsApp message using Twilio
             message = twilio_client.messages.create(
                 from_=twilio_phone_number,
                 body=f"New entry added: {new_entry_segment} - {new_entry_so}. Order time: {new_entry_time} at Row: {current_last_row}.\n\nCheck it now: {spreadsheet_url}",
@@ -76,9 +77,16 @@ while True:
 
             last_row = current_last_row
         else:
-            print('\nTime: {}\nNo new entry found. Last checked row: {} with the value of {} - {}. Order time: {}'.format(current_time,last_row, new_entry_segment, new_entry_so, new_entry_time))
+            print('\nTime: {}\nNo new entry found. Last checked row: {} with the value of {} - {}. Order time: {}'.format(current_time, last_row, new_entry_segment, new_entry_so, new_entry_time))
 
-        time.sleep(120)  # Check every 2 minute
+        time.sleep(sleep_interval)
 
     except KeyboardInterrupt:
-        handle_exit(None, None)  # Handle Ctrl+C
+        handle_exit(None, None)
+
+    except gspread.exceptions.APIError as api_error:
+        if 'RATE_LIMIT_EXCEEDED' in str(api_error):
+            print("Read requests per minute exceeded, upping the time distance..")
+            sleep_interval += 60  # Increment the sleep interval by 1 minute
+        else:
+            print("An error occurred:", api_error)
