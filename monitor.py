@@ -40,7 +40,7 @@ twilio_client = Client(twilio_account_sid, twilio_auth_token)
 # Set up the Ctrl+C signal handler
 signal.signal(signal.SIGINT, handle_exit)
 
-sleep_interval = 300  # Initial sleep interval is 5 minutes
+sleep_interval = 3  # Initial sleep interval is 5 minutes
 
 while True:
     try:
@@ -78,12 +78,6 @@ while True:
             last_row = current_last_row
         else:
             print('\nTime: {}\nNo new entry found. Last checked row: {} with the value of {} - {}. Order time: {}'.format(current_time, last_row, new_entry_segment, new_entry_so, new_entry_time))
-            message = twilio_client.messages.create(
-                from_=twilio_phone_number,
-                body=f"No new entry found. Last checked row: {last_row} with the value of {new_entry_segment} - {new_entry_so}. Order time: {new_entry_time}",
-                to=to_phone_number
-            )
-
         time.sleep(sleep_interval)
 
     except KeyboardInterrupt:
