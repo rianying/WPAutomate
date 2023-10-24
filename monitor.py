@@ -85,7 +85,7 @@ while True:
 
     except gspread.exceptions.APIError as api_error:
         if 'RATE_LIMIT_EXCEEDED' in str(api_error):
-            print("Read requests per minute exceeded, upping the time distance..")
             sleep_interval += 60  # Increment the sleep interval by 1 minute
+            print("Read requests per minute exceeded, upping the time distance to {} minutes}".format(sleep_interval))
         else:
             print("An error occurred:", api_error)
