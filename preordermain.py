@@ -7,6 +7,7 @@ import random
 from datetime import datetime, timedelta
 import math
 import time
+import re
 
 # Functions from fetch_PO.py
 
@@ -25,7 +26,7 @@ def process_csv(data):
     month_translations = {
         "Jan": "Jan", "Feb": "Feb", "Mar": "Mar", "Apr": "Apr",
         "Mei": "May", "Jun": "Jun", "Jul": "Jul", "Agu": "Aug",
-        "Sep": "Sep", "Okt": "Oct", "Nov": "Nov", "Des": "Dec"
+        "Sep": "Sep", "Okt": "Oct", "Nop": "Nov", "Des": "Dec"
     }
     for ind, eng in month_translations.items():
         df["order_date"] = df["order_date"].str.replace(ind, eng)
@@ -44,8 +45,32 @@ def process_csv(data):
     # Process each segment and start code
     for segment, startcode in segments_startcodes.items():
         try:
-            start_range = f"SO/SMR/{segment}/23/X/{startcode}".upper()
-            finish_range = start_range.replace(start_range[-4:], "9999")
+            # Use regex to match both types of segments and extract them
+            pattern = f"/SMR/({segment}/|{segment}$)"
+            segment_match = df['no_SO'].str.extract(pattern)
+            
+            # Find the index of rows that matched the segment pattern
+            matched_rows = segment_match.dropna().index
+            
+            # If no entry found for the current segment, skip to the next iteration
+            if len(matched_rows) == 0:
+                print(f"No 'no_SO' entry found for segment: {segment}. Skipping...")
+                continue
+            
+            segment_entry = df.loc[matched_rows[0], 'no_SO']  # Use the first matched row as sample
+
+            # Extract year and month using regex
+            year_month_pattern = r"/(\d{2})/([A-Z]{1,3})/"
+            match = re.search(year_month_pattern, segment_entry)
+            if match:
+                year, month = match.groups()
+            else:
+                print(f"Failed to extract year and month for segment: {segment}. Skipping...")
+                continue
+            
+            # Construct start_range using the extracted year and month, and the current segment and startcode
+            start_range = f"SO/SMR/{segment}/{year}/{month}/{startcode}"
+            finish_range = start_range[:-4] + "9999"
             result_df = df[df['no_SO'].between(start_range, finish_range)]
             
             # Check if result_df is empty
