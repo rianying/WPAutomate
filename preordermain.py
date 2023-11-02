@@ -18,7 +18,7 @@ def clean(input_file, output_file):
     cleaned = selected[selected['no_SO'].notna()]
     #cleaned['segment'] = cleaned['no_SO'].str.split('/').str[2]
     cleaned.to_csv(output_file, index=False)
-    print(f'{input_file} has been cleaned and saved as {output_file}!')
+    print(f'\n{input_file} has been cleaned and saved as {output_file}!')
 
 def process_csv(data):
     df = data.copy()
@@ -54,7 +54,7 @@ def process_csv(data):
             
             # If no entry found for the current segment, skip to the next iteration
             if len(matched_rows) == 0:
-                print(f"No 'no_SO' entry found for segment: {segment}. Skipping...")
+                print(f"\nNo 'no_SO' entry found for segment: {segment}. Skipping...")
                 continue
             
             segment_entry = df.loc[matched_rows[0], 'no_SO']  # Use the first matched row as sample
@@ -65,7 +65,7 @@ def process_csv(data):
             if match:
                 year, month = match.groups()
             else:
-                print(f"Failed to extract year and month for segment: {segment}. Skipping...")
+                print(f"\nFailed to extract year and month for segment: {segment}. Skipping...")
                 continue
             
             # Construct start_range using the extracted year and month, and the current segment and startcode
@@ -75,7 +75,7 @@ def process_csv(data):
             
             # Check if result_df is empty
             if result_df.empty:
-                print(f"No new orders found for segment: {segment}. Skipping...")
+                print(f"\nNo new orders found for segment: {segment}. Skipping...")
                 continue
             
             # Concatenate the results for this segment to the overall results DataFrame
@@ -90,13 +90,13 @@ def process_csv(data):
             segments_startcodes[segment] = str(max_used_code + 1).zfill(len(startcode))
             
         except Exception as e:
-            print(f"An error occurred while processing segment: {segment}. Error: {str(e)}. Skipping...")
+            print(f"\nAn error occurred while processing segment: {segment}. Error: {str(e)}. Skipping...")
             continue
     
     # Save the concatenated results to a single CSV file
     output_file = 'PO_fetched.csv'
     all_results_df.to_csv(output_file, index=False)
-    print(f'{output_file} has been generated.')
+    print(f'\n{output_file} has been generated.')
 
     with open("/Users/rian/Documents/GitHub/WPAutomate/startcode.json", 'w') as file:
         json.dump(segments_startcodes, file)
@@ -107,9 +107,9 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
     try:
         df = pd.read_csv(csv_file)
     except pd.errors.EmptyDataError:
-        print("No new orders found.")
+        print("\nNo new orders found.")
         os.remove(input_file)
-        print("SO file removed.")
+        print("\nSO file removed.")
         return None
     
     preorder_query_values = []
@@ -199,9 +199,9 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
 def copy_to_clipboard(text):
     try:
         subprocess.run(['pbcopy'], input=text.encode('utf-8'), check=True)
-        print("Query copied to clipboard.")
+        print("\nQuery copied to clipboard.")
     except subprocess.CalledProcessError:
-        print("Error copying to clipboard.")
+        print("\nError copying to clipboard.")
 
 if __name__ == "__main__":
     cleaned_file = '/Users/rian/Documents/GitHub/WPAutomate/SO_cleaned.csv'
@@ -225,7 +225,7 @@ if __name__ == "__main__":
                     cleaned_data = pd.read_csv(cleaned_file)
                     process_csv(cleaned_data)
                     os.remove(cleaned_file)
-                    print(f'{cleaned_file} has been removed.')
+                    print(f'\n{cleaned_file} has been removed.')
                 except Exception as e:
                     print(f'\n\nError: {e}')
             
@@ -234,17 +234,17 @@ if __name__ == "__main__":
                     if query is not None:
                         copy_to_clipboard(query)
                         os.remove(csv_file)
-                        print("CSV file removed.")
+                        print("\nCSV file removed.")
                         os.remove(input_file)
-                        print("SO file removed.")
+                        print("\nSO file removed.")
                 else:
-                    print(f"CSV file '{csv_file}' does not exist.")
+                    print(f"\nCSV file '{csv_file}' does not exist.")
             else:
-                print("No new SO")
+                print("\nNo new SO")
             #PRINT TIME NOW
             now = datetime.now()
             current_time = now.strftime("%H:%M:%S")
-            print("Current Time = {}\n".format(current_time))
+            print("\nCurrent Time = {}\n".format(current_time))
             time.sleep(3)
     
     except KeyboardInterrupt:
