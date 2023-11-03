@@ -3,28 +3,28 @@ from datetime import datetime
 import subprocess
 import os
 
-
-# Create an empty list to store the transformed data
 transformed_data = []
 
 # Get today's date in the desired format
 today_date = datetime.now().strftime('%Y-%m-%d')
 
-# Create an empty DataFrame 'balikanSAT'
+# Create an empty list to store the transformed data
 def process_data(df):
-    balikanSAT = pd.DataFrame(columns=['Tanggal', 'Nomor Dokumen', 'Nama Customer', 'Jenis dokumen'])
+    transformed_data = []
+
+    # Get today's date in the desired format
+    today_date = datetime.now().strftime('%Y-%m-%d')
 
     # Continue asking for user input until 'done' is entered
     while True:
-        user_input = input("4 Digit terakhir Nomor SJ (Kosongkan apabila selesai, tambahkan koma atas apabila Invoice): ")
+        user_input = input("4 Digit terakhir Nomor SO (kosongkan apabila selesai, koma atas apabila ada PO): ")
         if len(user_input) >= 1 and len(user_input) < 4:
-            print("Nomor SJ harus 4 digit.")
+            print("Nomor SO harus 4 digit.")
             continue
-
         # Check if the user wants to exit
         if user_input.lower() == '':
-            os.remove('/Users/rian/Downloads/sf.csv')
-            print('File idm.csv deleted.')
+            os.remove('/Users/rian/Downloads/sd.csv')
+            print('File sd.csv deleted.')
             break
 
         # Determine if user input has ' at the end
@@ -37,20 +37,19 @@ def process_data(df):
         matching_row = df[df['No_SJ'].str.endswith(last_4_digits)]
 
         if not matching_row.empty:
-            if not has_suffix:
-                # Fill the 'transformed_data' list for no_SJ
-                no_sj = matching_row['No_SJ'].values[0]
-                no_inv = no_sj.replace('SJ', 'INV')
-                customer_name = matching_row['customer'].values[0]
-                transformed_data.append([today_date, no_sj, customer_name, 'SJ', 2])
-                transformed_data.append([today_date, no_inv, customer_name, 'INV', 2])
-            else:
-                no_sj = matching_row['No_SJ'].values[0]
-                no_inv = no_sj.replace('SJ', 'INV')
-                customer_name = matching_row['customer'].values[0]
-                transformed_data.append([today_date, no_inv, customer_name, 'INV', 4])
+            # Fill the 'transformed_data' list for no_SJ
+            no_sj = matching_row['No_SJ'].values[0]
+            no_PO = no_sj.replace("SJ", "PO")
+            invoice = no_sj.replace("SJ", "INV")
+            customer_name = matching_row['customer'].values[0]
+            transformed_data.append([today_date, no_sj, customer_name, 'SJ', 1])
+
+            if has_suffix:
+                # User input with ' at the end, add a PO row
+                no_po = matching_row['no_PO'].values[0]
+                transformed_data.append([today_date, no_po, customer_name, 'PO', 1])
         else:
-            print(f"No matching record found for input '{user_input}'.")
+            print(f"Tidak ada nomor SO: '{user_input}'.")
 
     # Create a new DataFrame from the transformed data
     transformed_df = pd.DataFrame(transformed_data, columns=['Tanggal', 'Nomor Dokumen', 'Nama Customer', 'Jenis dokumen', 'Jumlah Lembar'])
@@ -64,13 +63,13 @@ def process_data(df):
     print("\n\nDataFrame content copied to clipboard.")
 
 if __name__ == "__main__":
-    sf = '/Users/rian/Downloads/sf.csv'
+    sat = '/Users/rian/Downloads/sd.csv'
 
-    if os.path.exists(sf):
+    if os.path.exists(sat):
         try:
-            df = pd.read_csv(sf, sep=',')
+            df = pd.read_csv(sat, sep=',')
             process_data(df)
         except Exception as e:
             print(e)
     else:
-        print(f"\n\n{sf} does not exist.")
+        print(f"\n\nsat.csv does not exist.")

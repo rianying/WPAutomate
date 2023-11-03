@@ -26,7 +26,7 @@ def process_data(df):
             continue
         # Check if the user wants to exit
         if user_input.lower() == '':
-            os.remove('/Users/rian/Documents/GitHub/WPAutomate/sat.csv')
+            os.remove('/Users/rian/Downloads/sat.csv')
             print('File sat.csv deleted.')
             break
 
@@ -68,7 +68,7 @@ def process_data(df):
     print("\n\nDataFrame content copied to clipboard.")
 
 if __name__ == "__main__":
-    sat = '/Users/rian/Documents/GitHub/WPAutomate/sat.csv'
+    sat = '/Users/rian/Downloads/sat.csv'
 
     if os.path.exists(sat):
         try:

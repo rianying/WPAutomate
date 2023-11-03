@@ -9,6 +9,7 @@ def list_scripts():
         "balikansat.py",
         "balikanidm.py",
         "balikandepo.py",
+        "balikansd.py"
     ]
 
     print("\n\nWhich script do you want to run?")
@@ -36,6 +37,7 @@ if __name__ == "__main__":
                 "balikansat.py",
                 "balikanidm.py",
                 "balikandepo.py",
+                "balikansd.py"
             ]
             if 1 <= choice <= len(script_names):
                 script_to_run = script_names[choice - 1]

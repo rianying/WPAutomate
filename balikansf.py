@@ -35,13 +35,13 @@ def process_data(df):
 
     # Copy the content to clipboard using subprocess
     subprocess.run(['pbcopy'], input=clipboard_content.encode('utf-8'))
-    os.remove('/Users/rian/Documents/GitHub/WPAutomate/balikansf.csv')
+    os.remove('/Users/rian/Downloads/balikansf.csv')
 
     print("\n\nDataFrame content copied to clipboard.")
     print("balikansf.csv removed.")
 
 if __name__ == "__main__":
-    balikansf = '/Users/rian/Documents/GitHub/WPAutomate/balikansf.csv'
+    balikansf = '/Users/rian/Downloads/balikansf.csv'
 
     if os.path.exists(balikansf):
         try:

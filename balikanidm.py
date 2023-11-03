@@ -27,7 +27,7 @@ def process_user_input(df):
 
         # Check if the user wants to exit
         if user_input.lower() == '':
-            os.remove('/Users/rian/Documents/GitHub/WPAutomate/idm.csv')
+            os.remove('/Users/rian/Downloads/idm.csv')
             print('File idm.csv deleted.')
             break
 
@@ -69,7 +69,7 @@ def process_user_input(df):
     print("\n\nDataFrame content copied to clipboard.")
 
 if __name__ == "__main__":
-    idm = '/Users/rian/Documents/GitHub/WPAutomate/idm.csv'
+    idm = '/Users/rian/Downloads/idm.csv'
 
     if os.path.exists(idm):
         try:
