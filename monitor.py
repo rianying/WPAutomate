@@ -40,7 +40,7 @@ twilio_client = Client(twilio_account_sid, twilio_auth_token)
 # Set up the Ctrl+C signal handler
 signal.signal(signal.SIGINT, handle_exit)
 
-sleep_interval = 3  # Initial sleep interval is 5 minutes
+sleep_interval =  60 # Initial sleep interval is 5 minutes
 
 while True:
     try:
@@ -86,6 +86,6 @@ while True:
     except gspread.exceptions.APIError as api_error:
         if 'RATE_LIMIT_EXCEEDED' in str(api_error):
             sleep_interval += 60  # Increment the sleep interval by 1 minute
-            print("Read requests per minute exceeded, upping the time distance to {} minutes}".format(sleep_interval))
+            print("Read requests per minute exceeded, upping the time distance to {} seconds".format(sleep_interval))
         else:
             print("An error occurred:", api_error)

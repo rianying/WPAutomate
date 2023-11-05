@@ -36,7 +36,7 @@ def process_csv(data):
     df["order_date"] = df["order_date"].dt.strftime('%Y-%m-%d') + ' ' + time_input
     
     # Load segment and start code from JSON file
-    with open("/Users/rian/Documents/GitHub/WPAutomate/Scripts/startcode.json", 'r') as file:
+    with open("/Users/rian/Documents/Github/WPAutomate/startcode.json", 'r') as file:
         segments_startcodes = json.load(file)
     
     # Initialize an empty DataFrame to store results for all segments
@@ -94,11 +94,11 @@ def process_csv(data):
             continue
     
     # Save the concatenated results to a single CSV file
-    output_file = '/Users/rian/Documents/GitHub/WPAutomate/Scripts/PO_fetched.csv'
+    output_file = '/Users/rian/Documents/Github/WPAutomate/PO_fetched.csv'
     all_results_df.to_csv(output_file, index=False)
     print(f'\n{output_file} has been generated.')
 
-    with open("/Users/rian/Documents/GitHub/WPAutomate/Scripts/startcode.json", 'w') as file:
+    with open("/Users/rian/Documents/Github/WPAutomate/startcode.json", 'w') as file:
         json.dump(segments_startcodes, file)
 
 # Functions from preorder.py
@@ -204,10 +204,10 @@ def copy_to_clipboard(text):
         print("\nError copying to clipboard.")
 
 if __name__ == "__main__":
-    cleaned_file = '/Users/rian/Documents/GitHub/WPAutomate/Scripts/SO_cleaned.csv'
-    csv_file = '/Users/rian/Documents/GitHub/WPAutomate/Scripts/PO_fetched.csv'
-    json_file = '/Users/rian/Documents/Github/WPAutomate/Scripts/customer_names.json'
-    po_expire_file = '/Users/rian/Documents/Github/WPAutomate/Scripts/po_expire.json'
+    cleaned_file = '/Users/rian/Documents/Github/WPAutomate/SO_cleaned.csv'
+    csv_file = '/Users/rian/Documents/Github/WPAutomate/PO_fetched.csv'
+    json_file = '/Users/rian/Documents/Github/WPAutomate/customer_names.json'
+    po_expire_file = '/Users/rian/Documents/Github/WPAutomate/po_expire.json'
     
     with open(json_file, 'r') as f:
         customer_names = json.load(f)
