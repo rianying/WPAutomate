@@ -54,7 +54,7 @@ def copy_to_clipboard(text):
     process.communicate(text.encode('utf-8'))
 
 if __name__ == "__main__":
-    csv_file_path = '/Users/rian/Documents/GitHub/WPAutomate/CheckPO.csv'  # Replace this with the actual path of your CSV file
+    csv_file_path = '/Users/rian/Downloads/CheckPO.csv'  # Replace this with the actual path of your CSV file
 
         # Delete the CSV file
     if os.path.exists(csv_file_path):
