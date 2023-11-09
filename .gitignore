@@ -1,7 +1,11 @@
 
-.DS_Store
-.DS_Store
-.DS_Store
-.DS_Store
 *.json
+.DS_Store
+/python3.10venv
+# Ignore Python byte-compiled files
+*.pyc
+
+# Ignore other unnecessary files
+.db
+*.log
 .DS_Store
