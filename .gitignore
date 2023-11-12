@@ -1,5 +1,4 @@
 
-*.json
 .DS_Store
 /.venv
 # Ignore Python byte-compiled files
@@ -10,4 +9,4 @@
 *.log
 .DS_Store
 .DS_Store
-env/env.py
+/env/env.py
