@@ -4,6 +4,12 @@ from datetime import datetime, timedelta
 import random
 import subprocess
 import os
+import platform
+from WPAutomate.env import env
+
+"""
+Script untuk validasi PO
+"""
 
 # Helper function to calculate business days
 def add_business_days(from_date, add_days):
@@ -50,25 +56,29 @@ def generate_queries(csv_file_path):
     return query_order_checking_start, query_order_checking_finish
 
 def copy_to_clipboard(text):
-    process = subprocess.Popen('pbcopy', env={'LANG': 'en_US.UTF-8'}, stdin=subprocess.PIPE)
-    process.communicate(text.encode('utf-8'))
+    if platform.system == 'Darwin':
+        process = subprocess.Popen('pbcopy', env={'LANG': 'en_US.UTF-8'}, stdin=subprocess.PIPE)
+        process.communicate(text.encode('utf-8'))
+    elif platform.system == 'Windows':
+        process = subprocess.Popen('clip', env={'LANG': 'en_US.UTF-8'}, stdin=subprocess.PIPE)
+        process.communicate(text.encode('utf-8'))
 
 if __name__ == "__main__":
-    csv_file_path = '/Users/rian/Downloads/CheckPO.csv'  # Replace this with the actual path of your CSV file
+    CheckPO = env.validate_mac['CheckPO']  # Replace this with the actual path of your CSV file
 
         # Delete the CSV file
-    if os.path.exists(csv_file_path):
+    if os.path.exists(CheckPO):
         try:
-            queries_order_checking_start, queries_order_checking_finish = generate_queries(csv_file_path)
+            queries_order_checking_start, queries_order_checking_finish = generate_queries(CheckPO)
             queries_combined = f"{queries_order_checking_start}\n\n{queries_order_checking_finish}"
 
                 # Copy to clipboard
             copy_to_clipboard(queries_combined)
 
             print("Generated SQL Queries have been copied to the clipboard!")
-            os.remove(csv_file_path)
-            print(f"\n{csv_file_path} has been deleted.")
+            os.remove(CheckPO)
+            print(f"\n{CheckPO} has been deleted.")
         except Exception as e:
             print("Error:", str(e))
     else:
-        print(f"\n{csv_file_path} does not exist.")
+        print(f"\n{CheckPO} does not exist.")

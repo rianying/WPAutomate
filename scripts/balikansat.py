@@ -2,6 +2,15 @@ import pandas as pd
 from datetime import datetime
 import subprocess
 import os
+import platform
+from WPAutomate.env import env
+
+"""
+Script ini untuk membalikan sat.csv (balikan sat) menjadi format
+yang dapat diimport ke excel
+"""
+
+satcsv = env.balikan_sat_env['sat_csv']
 
 transformed_data = []
 
@@ -15,6 +24,9 @@ def process_data(df):
     # Get today's date in the desired format
     today_date = datetime.now().strftime('%Y-%m-%d')
 
+    # Create an empty DataFrame 'balikanSAT'
+    balikanSAT = pd.DataFrame(columns=['Tanggal', 'Nomor Dokumen', 'Nama Customer', 'Jenis dokumen'])
+
     # Continue asking for user input until 'done' is entered
     while True:
         user_input = input("4 Digit terakhir Nomor SO (kosongkan apabila selesai, koma atas apabila ada PO): ")
@@ -23,8 +35,8 @@ def process_data(df):
             continue
         # Check if the user wants to exit
         if user_input.lower() == '':
-            os.remove('/Users/rian/Downloads/sd.csv')
-            print('File sd.csv deleted.')
+            os.remove(satcsv)
+            print('File sat.csv deleted.')
             break
 
         # Determine if user input has ' at the end
@@ -34,20 +46,22 @@ def process_data(df):
         last_4_digits = user_input.rstrip("'")
 
         # Find the relevant row in the CSV based on the user input
-        matching_row = df[df['No_SJ'].str.endswith(last_4_digits)]
+        matching_row = df[df['no_SO'].str.endswith(last_4_digits)]
 
         if not matching_row.empty:
             # Fill the 'transformed_data' list for no_SJ
-            no_sj = matching_row['No_SJ'].values[0]
-            no_PO = no_sj.replace("SJ", "PO")
-            invoice = no_sj.replace("SJ", "INV")
-            customer_name = matching_row['customer'].values[0]
+            no_sj = matching_row['no_SO'].values[0]
+            no_SO = no_sj.replace("SJ", "SO")
+            customer_name = matching_row['customer_name'].values[0]
             transformed_data.append([today_date, no_sj, customer_name, 'SJ', 1])
 
             if has_suffix:
                 # User input with ' at the end, add a PO row
                 no_po = matching_row['no_PO'].values[0]
                 transformed_data.append([today_date, no_po, customer_name, 'PO', 1])
+
+            # Fill the 'transformed_data' list for no_PO
+            transformed_data.append([today_date, None, customer_name, 'BPB', 1])
         else:
             print(f"Tidak ada nomor SO: '{user_input}'.")
 
@@ -58,12 +72,17 @@ def process_data(df):
     clipboard_content = transformed_df.to_csv(index=False, sep='\t')
 
     # Copy the content to clipboard using subprocess
-    subprocess.run(['pbcopy'], input=clipboard_content.encode('utf-8'))
-
-    print("\n\nDataFrame content copied to clipboard.")
+    if platform.system() == 'Darwin':
+        subprocess.run(['pbcopy'], input=clipboard_content.encode('utf-8'))
+        print("\n\nDataFrame content copied to clipboard.")
+    elif platform.system() == 'Windows':
+        subprocess.run(['clip'], input=clipboard_content.encode('utf-8'))
+        print("\n\nDataFrame content copied to clipboard.")
+    else:
+        print("Unsupported operating system.")
 
 if __name__ == "__main__":
-    sat = '/Users/rian/Downloads/sd.csv'
+    sat = satcsv
 
     if os.path.exists(sat):
         try:

@@ -2,7 +2,15 @@ import pandas as pd
 from datetime import datetime
 import subprocess
 import os
+import platform
+from WPAutomate.env import env
 
+"""
+Script ini untuk membalikan depo.csv (balikan depo) menjadi format
+yang dapat diimport ke excel
+"""
+
+depocsv = env.balikan_depo_env['depo_csv']
 
 # Create an empty list to store the transformed data
 transformed_data = []
@@ -14,21 +22,17 @@ today_date = datetime.now().strftime('%Y-%m-%d')
 balikanSAT = pd.DataFrame(columns=['Tanggal', 'Nomor Dokumen', 'Nama Customer', 'Jenis dokumen'])
 
 # Continue asking for user input until 'done' is entered
-def process_user_input(df):
-    transformed_data = []
-    today_date = datetime.now().strftime('%Y-%m-%d')
-    
+def process_data(df):
     while True:
         user_input = input("4 Digit terakhir Nomor SJ (Kosongkan apabila selesai): ")
-        
         if len(user_input) >= 1 and len(user_input) < 4:
             print("Nomor SJ harus 4 digit.")
             continue
 
         # Check if the user wants to exit
         if user_input.lower() == '':
-            os.remove('/Users/rian/Downloads/idm.csv')
-            print('File idm.csv deleted.')
+            os.remove(depocsv)
+            print('File depo.csv deleted.')
             break
 
         # Determine if user input has ' at the end
@@ -38,22 +42,16 @@ def process_user_input(df):
         last_4_digits = user_input.rstrip("'")
 
         # Find the relevant row in the CSV based on the user input
-        matching_row = df[df['no_SJ'].str.endswith(last_4_digits)]
+        matching_row = df[df['No_SJ'].str.endswith(last_4_digits)]
 
         if not matching_row.empty:
             # Fill the 'transformed_data' list for no_SJ
-            no_sj = matching_row['no_SJ'].values[0]
-            customer_name = matching_row['customer_name'].values[0]
-            transformed_data.append([today_date, no_sj, customer_name, 'SJ', 1])
-
-            no_po = matching_row['no_PO'].values[0]
-            transformed_data.append([today_date, no_po, customer_name, 'PO', 2])
-
-            # Fill the 'transformed_data' list for no_PO
-            transformed_data.append([today_date, None, customer_name, 'BPB', 1])
-
-            # Fill the 'transformed_data' list for resi_indopaket
-            transformed_data.append([today_date, None, customer_name, 'RESI INDOPAKET', 1])
+            no_sj = matching_row['No_SJ'].values[0]
+            customer_name = matching_row['customer'].values[0]
+            transformed_data.append([today_date, no_sj, customer_name, 'SJ', 2])
+            
+            if has_suffix:
+                transformed_data.append([today_date, None, customer_name, 'Faktur', 1])
         else:
             print(f"No matching record found for input '{user_input}'.")
 
@@ -64,18 +62,23 @@ def process_user_input(df):
     clipboard_content = transformed_df.to_csv(index=False, sep='\t')
 
     # Copy the content to clipboard using subprocess
-    subprocess.run(['pbcopy'], input=clipboard_content.encode('utf-8'))
-
-    print("\n\nDataFrame content copied to clipboard.")
+    if platform.system() == 'Darwin':
+        subprocess.run(['pbcopy'], input=clipboard_content.encode('utf-8'))
+        print("\n\nDataFrame content copied to clipboard.")
+    elif platform.system() == 'Windows':
+        subprocess.run(['clip'], input=clipboard_content.encode('utf-8'))
+        print("\n\nDataFrame content copied to clipboard.")
+    else:
+        print("Unsupported operating system.")
 
 if __name__ == "__main__":
-    idm = '/Users/rian/Downloads/idm.csv'
+    depo = depocsv
 
-    if os.path.exists(idm):
+    if os.path.exists(depo):
         try:
-            df = pd.read_csv(idm, sep=',')
-            process_user_input(df)
+            df = pd.read_csv(depo, sep=',')
+            process_data(df)
         except Exception as e:
             print(e)
     else:
-        print(f"\n\n{idm} does not exist.")
+        print(f"\n\n{depo} does not exist.")

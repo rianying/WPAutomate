@@ -6,17 +6,22 @@ import subprocess
 import random
 from datetime import datetime, timedelta
 import math
+import platform
 import time
 import re
+from WPAutomate.env import env
+
+"""
+Script otomasi preorder dan validasi PO
+"""
 
 # Functions from fetch_PO.py
-
+start_code_path = env.preorder['start_code_csv']
 def clean(input_file, output_file):
     data = pd.read_csv(input_file, sep=';', skiprows=4)
     data.rename(columns={'Tgl Pesan': 'order_date', 'Unnamed: 2': 'no_SO', 'No. Pesanan': 'customer_number', 'Unnamed: 4': 'customer_name', 'Unnamed: 6': 'no_PO'}, inplace=True)
     selected = data[['order_date', 'no_PO', 'no_SO', 'customer_number']]
     cleaned = selected[selected['no_SO'].notna()]
-    #cleaned['segment'] = cleaned['no_SO'].str.split('/').str[2]
     cleaned.to_csv(output_file, index=False)
     print(f'\n{input_file} has been cleaned and saved as {output_file}!')
 
@@ -36,9 +41,9 @@ def process_csv(data):
     df["order_date"] = df["order_date"].dt.strftime('%Y-%m-%d') + ' ' + time_input
     
     # Load segment and start code from JSON file
-    with open("/Users/rian/Documents/Github/WPAutomate/startcode.json", 'r') as file:
+    with open(start_code_path, 'r') as file:
         segments_startcodes = json.load(file)
-    
+
     # Initialize an empty DataFrame to store results for all segments
     all_results_df = pd.DataFrame()
     
@@ -94,11 +99,11 @@ def process_csv(data):
             continue
     
     # Save the concatenated results to a single CSV file
-    output_file = '/Users/rian/Documents/Github/WPAutomate/PO_fetched.csv'
+    output_file = po_fetched
     all_results_df.to_csv(output_file, index=False)
     print(f'\n{output_file} has been generated.')
 
-    with open("/Users/rian/Documents/Github/WPAutomate/startcode.json", 'w') as file:
+    with open(start_code_path, 'w') as file:
         json.dump(segments_startcodes, file)
 
 # Functions from preorder.py
@@ -125,12 +130,35 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
         customer_number = row['customer_number']
         customer_name = customer_names.get(str(customer_number), '')
 
-        if customer_name == '':
-            customer_name = input(f"Enter customer name for {no_SO}: ")
+        while customer_name == '':
+            customer_name = input(f"Enter customer name for {no_SO}: ").strip()
+            if customer_name:
+                code_market = input(f"Enter segment for {customer_name}: ")
+                regency = input(f"Enter regency for {customer_name}: ")
+                province = input(f"Enter province for {customer_name}: ")
+
+                # Initialize expedition_name to None to enter the loop
+                expedition_name = None
+
+                # Keep asking until a valid pick is provided
+                while not expedition_name:
+                    pick = input("Expedition:\n 1. PT. SARWA MANGALLA RAYA\n 2. PT. Adika Express\nChoose (1/2): ").strip()
+
+                    # Use a dictionary to map the input to the expedition names
+                    expedition_options = {
+                        "1": "PT. SARWA MANGALLA RAYA",
+                        "2": "PT. Adika Express"
+                    }
+
+                    expedition_name = expedition_options.get(pick)
+                    if not expedition_name:
+                        print("Please enter a valid option (1 or 2).")
+                customer_address = input(f"Enter customer address for {customer_name}: ")
+
 
             if customer_name not in customer_names.values():
                 customer_names[str(customer_number)] = customer_name
-                with open(json_file, 'w') as f:
+                with open(customer_names_json, 'w') as f:
                     json.dump(customer_names, f, indent=4)
                 print(f"\nAdded '{customer_name}' for customer number {customer_number} in customer_names.json")
 
@@ -146,6 +174,13 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
             
             po_expire_value = po_expire_data.get(customer_name, 4)  # Default to 4 days if not found
             po_expired = order_time + np.timedelta64(po_expire_value, 'D')
+
+            new_customer_values = (
+                "('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')".format(
+                    code_market, customer_name, regency, province, expedition_name, customer_address
+                )
+            )
+            
             
             pre_order_values = (
                 "('{}', '{}', '{}', '{}', '{}')".format(
@@ -181,7 +216,10 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
             )
             preorder_query_values.append(pre_order_values)
 
-    
+    if new_customer_values:
+        insert_query = "INSERT INTO customer (code_market, customer_name, regency, province, expedition_name, customer_address) VALUES\n"
+        insert_query += ',\n'.join(new_customer_values) + ";\n/"
+        
     if preorder_query_values:
         insert_query = "INSERT INTO preorder (no_PO, no_SO, customer_name, order_time, po_expired) VALUES\n"
         insert_query += ',\n'.join(preorder_query_values) + ";\n/"
@@ -198,18 +236,24 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
 
 def copy_to_clipboard(text):
     try:
-        subprocess.run(['pbcopy'], input=text.encode('utf-8'), check=True)
-        print("\nQuery copied to clipboard.")
+        if platform.system == 'Darwin':
+            subprocess.run(['pbcopy'], input=text.encode('utf-8'), check=True)
+            print("\nQuery copied to clipboard.")
+        elif platform.system == 'Windows':
+            subprocess.run(['clip'], input=text.encode('utf-8'), check=True)
+            print("\nQuery copied to clipboard.")
+        else:
+            print("\nUnsupported operating system.")
     except subprocess.CalledProcessError:
         print("\nError copying to clipboard.")
 
 if __name__ == "__main__":
-    cleaned_file = '/Users/rian/Documents/Github/WPAutomate/SO_cleaned.csv'
-    csv_file = '/Users/rian/Documents/Github/WPAutomate/PO_fetched.csv'
-    json_file = '/Users/rian/Documents/Github/WPAutomate/customer_names.json'
-    po_expire_file = '/Users/rian/Documents/Github/WPAutomate/po_expire.json'
+    cleaned_file = env.preorder['so_cleaned']
+    po_fetched = env.preorder['po_fetched']
+    customer_names_json = env.preorder['customer_names']
+    po_expire_file = env.preorder['po_expire']
     
-    with open(json_file, 'r') as f:
+    with open(customer_names_json, 'r') as f:
         customer_names = json.load(f)
     
     with open(po_expire_file, 'r') as f:
@@ -217,7 +261,7 @@ if __name__ == "__main__":
 
     try:
         while True:
-            input_file = r'/Volumes/PUBLIC/SC - RIAN (Intern)/1.csv'
+            input_file = env.preorder['input_file']
 
             if os.path.exists(input_file):
                 try:
@@ -229,16 +273,16 @@ if __name__ == "__main__":
                 except Exception as e:
                     print(f'\n\nError: {e}')
             
-                if os.path.exists(csv_file):
-                    query = generate_single_query(csv_file, customer_names, po_expire_data)
+                if os.path.exists(po_fetched):
+                    query = generate_single_query(po_fetched, customer_names, po_expire_data)
                     if query is not None:
                         copy_to_clipboard(query)
-                        os.remove(csv_file)
+                        os.remove(po_fetched)
                         print("\nCSV file removed.")
                         os.remove(input_file)
                         print("\nSO file removed.")
                 else:
-                    print(f"\nCSV file '{csv_file}' does not exist.")
+                    print(f"\nCSV file '{po_fetched}' does not exist.")
             else:
                 print("\nNo new SO")
             #PRINT TIME NOW

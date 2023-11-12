@@ -1,46 +1,64 @@
-import pandas as pd
-import numpy as np
 import subprocess
+import glob
+import os
+
+# Define the path to the scripts directory
+scripts_dir = os.path.join(os.getcwd(), 'scripts')
+
+def get_script_description(path):
+    # Open the script and read the first few lines
+    with open(path, 'r') as file:
+        lines = file.readlines()
+    # Look for a docstring at the start of the file enclosed in triple quotes
+    description_lines = []
+    reading_description = False
+    for line in lines:
+        line = line.strip()
+        if line.startswith('"""'):  # Check if line is the start of a docstring
+            if reading_description:  # Check if it's the end of the docstring
+                break
+            else:
+                reading_description = True  # Mark the start of the docstring
+                continue  # Skip the line with starting quotes
+        if reading_description:  # If within docstring, append the line
+            description_lines.append(line)
+    return ' '.join(description_lines) or "No description available."
 
 def list_scripts():
-    script_names = [
-        "validatemac.py",
-        "balikansfall.py",
-        "balikansat.py",
-        "balikanidm.py",
-        "balikandepo.py",
-        "balikansd.py"
-    ]
+    # Use glob to find all .py files in the scripts directory
+    script_paths = glob.glob(os.path.join(scripts_dir, '*.py'))
+    script_names = [os.path.basename(path) for path in script_paths]  # Extract file names
 
-    print("\n\nWhich script do you want to run?")
+    print("\n\nWhich script do you want to run?\n")
     for i, script_name in enumerate(script_names, start=1):
-        print(f"{i}. {script_name[:-3]}")
+        # Get the full path of script
+        full_script_path = os.path.join(scripts_dir, script_name)
+        # Get the description for each script
+        description = get_script_description(full_script_path)
+        # Print the script name with its description
+        print(f"{i}. {script_name[:-3]} \t|{description}\n")  # Remove the .py extension for display
     print('\n')
+    return script_paths
 
-def run_script(script_name):
+def run_script(script_path):
     try:
-        subprocess.run(['python3', script_name], check=True)
-    except subprocess.CalledProcessError:
-        print(f"Error running the script: {script_name}")
+        # Run the script using its full path
+        subprocess.run(['python3', script_path], check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Error running the script: {script_path}")
+        print(e)
 
 if __name__ == "__main__":
     while True:
-        list_scripts()
+        # Get the full paths of scripts to run
+        script_paths = list_scripts()
 
         try:
             choice = int(input("Enter the number of the script (0 to exit): "))
             if choice == 0:
                 break
-            script_names = [
-                "validatemac.py",
-                "balikansfall.py",
-                "balikansat.py",
-                "balikanidm.py",
-                "balikandepo.py",
-                "balikansd.py"
-            ]
-            if 1 <= choice <= len(script_names):
-                script_to_run = script_names[choice - 1]
+            if 1 <= choice <= len(script_paths):
+                script_to_run = script_paths[choice - 1]
                 run_script(script_to_run)
             else:
                 print("Invalid choice. Please enter a valid number.")

@@ -6,25 +6,27 @@ import signal
 import sys
 import json
 from datetime import datetime
+from WPAutomate.env import env
+
+"""
+Script ini untuk memonitor Logbook Google Sheets
+dan menotifikasi via WA apabila ada entry baru
+"""
 
 def handle_exit(sig, frame):
     print("\nProgram exited")
     sys.exit(0)
 
-# Load sensitive credentials from twilio.json
-with open('twillio.json') as json_file:
-    credentials = json.load(json_file)
 
-twilio_account_sid = credentials['twilio_account_sid']
-twilio_auth_token = credentials['twilio_auth_token']
-twilio_phone_number = credentials['twilio_phone_number']
-to_phone_number = credentials['to_phone_number']
-spreadsheet_url = credentials['url']
+twilio_account_sid = env.twilio_env['twilio_account_sid']
+twilio_auth_token = env.twilio_env['twilio_auth_token']
+twilio_phone_number = env.twilio_env['twilio_phone_number']
+to_phone_number = env.twilio_env['to_phone_number']
+spreadsheet_url = env.twilio_env['url']
 
 # Load Google Sheets API credentials from credentials.json
-credentials_file = 'credentials.json'
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-credentials = ServiceAccountCredentials.from_json_keyfile_name(credentials_file, scope)
+credentials = ServiceAccountCredentials.from_json_keyfile_dict(env.google_env, scope)
 client = gspread.authorize(credentials)
 
 # Open the spreadsheet using its URL
@@ -40,7 +42,7 @@ twilio_client = Client(twilio_account_sid, twilio_auth_token)
 # Set up the Ctrl+C signal handler
 signal.signal(signal.SIGINT, handle_exit)
 
-sleep_interval =  60 # Initial sleep interval is 5 minutes
+sleep_interval =  300 # Initial sleep interval is 5 minutes
 
 while True:
     try:

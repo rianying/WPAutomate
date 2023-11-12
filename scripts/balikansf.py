@@ -2,6 +2,15 @@ import pandas as pd
 from datetime import datetime
 import subprocess
 import os
+import platform
+from WPAutomate.env import env
+
+"""
+Script ini untuk membalikan sf.csv (balikan sf) menjadi format
+yang dapat diimport ke excel
+"""
+
+sfcsv = env.balikan_sf['sf_csv']
 
 
 # Create an empty list to store the transformed data
@@ -12,7 +21,6 @@ today_date = datetime.now().strftime('%Y-%m-%d')
 
 # Create an empty DataFrame 'balikanSAT'
 def process_data(df):
-    balikanSAT = pd.DataFrame(columns=['Tanggal', 'Nomor Dokumen', 'Nama Customer', 'Jenis dokumen'])
 
     # Continue asking for user input until 'done' is entered
     while True:
@@ -23,8 +31,8 @@ def process_data(df):
 
         # Check if the user wants to exit
         if user_input.lower() == '':
-            os.remove('/Users/rian/Downloads/sf.csv')
-            print('File idm.csv deleted.')
+            os.remove(sfcsv)
+            print('File sf.csv deleted.')
             break
 
         # Determine if user input has ' at the end
@@ -59,12 +67,17 @@ def process_data(df):
     clipboard_content = transformed_df.to_csv(index=False, sep='\t')
 
     # Copy the content to clipboard using subprocess
-    subprocess.run(['pbcopy'], input=clipboard_content.encode('utf-8'))
-
-    print("\n\nDataFrame content copied to clipboard.")
+    if platform.system() == 'Darwin':
+        subprocess.run(['pbcopy'], input=clipboard_content.encode('utf-8'))
+        print("\n\nDataFrame content copied to clipboard.")
+    elif platform.system() == 'Windows':
+        subprocess.run(['clip'], input=clipboard_content.encode('utf-8'))
+        print("\n\nDataFrame content copied to clipboard.")
+    else:
+        print("Unsupported operating system.")
 
 if __name__ == "__main__":
-    sf = '/Users/rian/Downloads/sf.csv'
+    sf = sfcsv
 
     if os.path.exists(sf):
         try:
