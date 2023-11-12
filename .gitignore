@@ -1,7 +1,7 @@
 
 *.json
 .DS_Store
-/python3.10venv
+/.venv
 # Ignore Python byte-compiled files
 *.pyc
 

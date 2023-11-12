@@ -1,9 +1,12 @@
 customer = {
-    "MT-KFAP50": "KF DANAU TAMBLINGAN 1",
-    "MT-KFAP49": "KF KARANGASEM",
-    "MT-KFAP47": "KF BUANA RAYA",
-    "MT-KFAP46": "APT KF IMAM BONJOL 2",
-    "MT-KFAP45": "APT KF 07 NANGKA UTARA",
+    "MT-KFBH10": "KF PEL 029 RSUD PANGK",
+    "MT-KFBH09": "KE 0471 CELENTANG",
+    "MT-KFBH05": "KF 0220",
+    "MT-KFBH04": "KF 0209 ROSARUM",
+    "MT-KFBH03": "KF 0118",
+    "MT-KFBH02": "KF 0080",
+    "MT-KFBH01": "KF 0072",
+    "MT-KFBL01": "KF PEL 001 RSUP DR C"
 }
 
 # for each customer, generate a query to insert into table customer(code_market, customer_name, expedition_name) values ('MT', customer_name, 'PT. SARWA MANGGALLA RAYA)
