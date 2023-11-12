@@ -15,13 +15,12 @@ WPAutomate is a collection of scripts designed to automate SMR's OSC Intern Jobs
 - `requirements.txt`: Contains all the necessary Python packages required to run the scripts.
 
 ### Automated Tasks
-- `scripts/balikandepo.py`: Handles the operations related to depot returns or depot management.
-- `scripts/balikanidm.py`: Manages tasks associated with Internet Download Manager operations.
-- `scripts/balikansat.py`: Automates processes for satellite-related operations or equipment management.
-- `scripts/balikansd.py`: Deals with operations involving SD card storage or related functionalities.
-- `scripts/balikansf.py`: A script with a specific function within the automation process, details to be added upon clarification.
+- `scripts/balikandepo.py`: Handles the documents associated with depo and have it ready to paste into excel.
+- `scripts/balikanidm.py`: Handles the documents associated with IDM and have it ready to paste into excel.
+- `scripts/balikansat.py`: Handles the documents associated with SAT and have it ready to paste into excel.
+- `scripts/balikansd.py`: Handles the documents associated with SD and have it ready to paste into excel.
+- `scripts/balikansf.py`: Handles the documents associated with SF and have it ready to paste into excel.
 - `scripts/monitor.py`: Monitors the status and health of various automated processes.
-- `scripts/newcustomer.py`: Automates the onboarding process for new customers.
 - `scripts/preorder.py`: Manages the pre-ordering system, from taking orders to processing them.
 - `scripts/validate.py`: Validates data or process integrity before proceeding with automation tasks.
 
