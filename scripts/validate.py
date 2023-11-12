@@ -59,12 +59,13 @@ def generate_queries(csv_file_path):
     return query_order_checking_start, query_order_checking_finish
 
 def copy_to_clipboard(text):
-    if platform.system == 'Darwin':
-        process = subprocess.Popen('pbcopy', env={'LANG': 'en_US.UTF-8'}, stdin=subprocess.PIPE)
-        process.communicate(text.encode('utf-8'))
-    elif platform.system == 'Windows':
-        process = subprocess.Popen('clip', env={'LANG': 'en_US.UTF-8'}, stdin=subprocess.PIPE)
-        process.communicate(text.encode('utf-8'))
+
+    if platform.system() == 'Darwin':
+        subprocess.run(['pbcopy'], universal_newlines=True, input=text)
+        print("Generated SQL Queries have been copied to the clipboard!")
+    elif platform.system() == 'Windows':
+        subprocess.run(['clip'], universal_newlines=True, input=text)
+        print("Generated SQL Queries have been copied to the clipboard!")
 
 if __name__ == "__main__":
     CheckPO = env.validate_mac['CheckPO']  # Replace this with the actual path of your CSV file
@@ -78,7 +79,6 @@ if __name__ == "__main__":
                 # Copy to clipboard
             copy_to_clipboard(queries_combined)
 
-            print("Generated SQL Queries have been copied to the clipboard!")
             os.remove(CheckPO)
             print(f"\n{CheckPO} has been deleted.")
         except Exception as e:
