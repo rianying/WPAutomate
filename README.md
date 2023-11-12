@@ -31,14 +31,25 @@ To install the required dependencies for WPAutomate, run the following command o
 ```bash
 #For MacOS / Linux
 python3 -m venv ./venv
+#Activating virtual environment
 source .venv/bin/activate
 
 #For Windows
-python3 -m .venv/Scripts/Activate
+python -m .venv/Scripts/Activate
+#Activating virtual environment
 ./venv/bin/activate
 ```
 
+To deactivate virtual environment, simply run the following command:
 ```bash
+deactivate
+```
+
+```bash
+#For MacOS / Linux
+pip3 install -r requirements.txt
+
+#For Windows
 pip install -r requirements.txt
 ```
 
