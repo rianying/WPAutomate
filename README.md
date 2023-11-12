@@ -26,13 +26,15 @@ WPAutomate is a collection of scripts designed to automate SMR's OSC Intern Jobs
 
 ## Installation
 
-To install the required dependencies for WPAutomate, run the following command:
+To install the required dependencies for WPAutomate, run the following command on terminal / command prompts:
 
 ```bash
 #For MacOS / Linux
+python3 -m venv ./venv
 source .venv/bin/activate
 
 #For Windows
+python3 -m .venv/Scripts/Activate
 ./venv/bin/activate
 ```
 
