@@ -49,14 +49,22 @@ def run_script(script_path):
         print(f"Error running the script: {script_path}")
         print(e)
 
+def show_help():
+    # Function to display help message
+    parser.print_help()
+    list_scripts()  # Optionally display available scripts after showing help
+
 if __name__ == "__main__":
     # Set up argparse to accept a script name as an optional argument
     parser = argparse.ArgumentParser(description="Run a specified script or display a menu to choose one.")
     parser.add_argument('script_name', nargs='?', help='The name of the script to run', default=None)
-    args = parser.parse_args()
+    args, unknown = parser.parse_known_args()
     
-    # If a script name was provided, run that script
-    if args.script_name:
+    # Check for help flags in the unknown arguments
+    if any(help_flag in unknown for help_flag in ('-help', '--h', '?')):
+        show_help()  # Call the show_help function to display the help message
+    elif args.script_name:
+        # If a script name was provided, run that script
         script_path = os.path.join(scripts_dir, args.script_name)
         if os.path.isfile(script_path) and script_path.endswith('.py'):
             run_script(script_path)
@@ -67,7 +75,11 @@ if __name__ == "__main__":
         while True:
             script_paths = list_scripts()
             try:
-                choice = int(input("Enter the number of the script (0 to exit): "))
+                choice = input("Enter the number of the script (0 to exit): ")
+                if choice in ('-?', '-help', '--h'):
+                    show_help()  # Display help message if help flags are input during prompt
+                    continue
+                choice = int(choice)  # Convert input to int for selection
                 if choice == 0:
                     break
                 if 1 <= choice <= len(script_paths):
