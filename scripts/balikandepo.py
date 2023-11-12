@@ -2,8 +2,12 @@ import pandas as pd
 from datetime import datetime
 import subprocess
 import os
+from pathlib import Path
+import sys
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+from env import env
 import platform
-from WPAutomate.env import env
+
 
 """
 Script ini untuk membalikan depo.csv (balikan depo) menjadi format

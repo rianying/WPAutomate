@@ -5,7 +5,10 @@ import random
 import subprocess
 import os
 import platform
-from WPAutomate.env import env
+from pathlib import Path
+import sys
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+from env import env
 
 """
 Script untuk validasi PO

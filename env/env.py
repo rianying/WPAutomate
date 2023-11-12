@@ -1,26 +1,26 @@
 balikan_depo_env = {
-    'depo_csv': '/Users/rian/Documents/GitHub/WPAutomate/depo.csv'
+    'depo_csv': '/Users/rian/Downloads/depo.csv'
 }
 
 balikan_idm_env = {
-    'idm_csv': '/Users/rian/Documents/GitHub/WPAutomate/idm.csv'
+    'idm_csv': '/Users/rian/Downloads/idm.csv'
 }
 
 balikan_sat_env = {
-    'sat_csv': '/Users/rian/Documents/GitHub/WPAutomate/sat.csv'
+    'sat_csv': '/Users/rian/Downloads/sat.csv'
 }
 
 balikan_sd = {
-    'sd_csv': '/Users/rian/Documents/GitHub/WPAutomate/sd.csv'
+    'sd_csv': '/Users/rian/Downloads/sd.csv'
 }
 
 balikan_sf = {
-    'sf_csv': '/Users/rian/Documents/GitHub/WPAutomate/sf.csv'
+    'sf_csv': '/Users/rian/Downloads/sf.csv'
 }
 
 twilio_env = {
     "twilio_account_sid" : "AC31f35ab1b7e268a8b1b0147ac9ac012c",
-    "twilio_auth_token" : "871e9bc0ac1c9139974a113d96f0780e",
+    "twilio_auth_token" : "fc3b10448588d1597c84bd9209559294",
     "twilio_phone_number" : "whatsapp:+14155238886",
     "to_phone_number" : "whatsapp:+6281282847410",
     "url" : "https://docs.google.com/spreadsheets/d/1pcjYibnJNEp1jow9mpJSb63-fyGkOAodVwL1WblVtpM/edit#gid=642080019"
@@ -28,24 +28,24 @@ twilio_env = {
 
 google_env = {
   "type": "service_account",
-  "project_id": "neon-slate-390622",
-  "private_key_id": "79707a9cd6a9697f7946224673451f3b54fb7f52",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCpTEuGFRBg4Ecj\nxQwf5azDixhS2i+IhwM4NwDv7xI7Cm8iJPHT08YU6DumEZ6jHsarN+8xChOtKuRG\nJvtSWQXLDPfcNkFqkM61fIUDAUviwYCHOTa9MDyIcuOA16ikXO1XgriAy+U4SFrj\nmizBGnk3rgw2DpatJeVOhKe80rgq7rFXNDuLlpWkcD1qL2wi5WOudQsQbLgFqq1h\nFG8A/Vy2DV9s05+/eygt9vj7j3DZ0WcW4+Ek4l99/c+ObJmEy1ERNtDkV+/yw6Lr\nCGnqKCPTGO7G9UUKAm/zMv5u1o4fgGXYY7eoUSi4rvz7XQa6JQICDcSlZOq4zAVG\nh/VqKVF7AgMBAAECggEAT9LR30gKP2swD70GYPnFcjOgxdvrQpfKHFTO49JYya67\nRKGfxi1ZfZ0cFsrC/g1yReOrK3ehXGpXVH5nzGV+FkWojlOkl27sj+TEwGx5j9KF\n2/xNg3l9aSamfybv9IN+Qt83SD8a9mUjOaKFjI0Db43oYwqQ39X43wMsJZtDS7YY\nLGR5CaLxbTidxNNYaAfWSfak4bwQWqryOXroi5weEOGNfBbygsflSloKDqw+GNyp\nM634qXq2YBLF9utWSaIQhmFYqmXrKSC2BdW5FYJiFaq+3mwmKBiZgza4BhgUVY/i\nqVRxq2Yy836z1Ws6bp3lPZui0fM0cmIbe7br5UXpXQKBgQDaUx3q88XYEXfd8DrJ\nWVZnl1c0THREbblt7jFgYXb7mzrL/vlF+Xi2f++uHpZysdfityqM1E4vGTflIBBE\nUdD0DFdqaKVfHE/M9xWYfKxxXa6qj65BVDQ1WmvEf+nQoF9x+1Z2gRUv+hYXR+lh\nDBB/i9btAivrbr/vcV4pXaBTfwKBgQDGg1aYlfW0xTIRP78l8mdtT1/C3vQ/EBAx\nIi096nuur7rf5kIvgeXlARmiqpU23R7kjUNk+tEwrmXJ3/yCwbcteU5n8pLG7Ya8\nZxUc8tuurjD2EcwnA2GHd67puylQZzA6RvIDulzQMqOfiHhuzLF/KhmYDVlP9/h+\nQQJyvBBQBQKBgGH9olT9OxSCqqFTnJ8Y2P4/4CUaF6lK8kpT+Zd/x26guqAq/ekZ\nUsPe4k3tbqtmBTa97XwuIjVjhUHyxTpU2otfKrEY7PimdW7Si7/YXXG4kZf+S0EJ\nMTGtNueIXgKEqLI5FBK2VzMkdVvXq/kh+Bm3Qy03p0zRdZZb9N5uJnKzAoGAYnhx\n8zyn5iTPYikJ64vj7CAsc2DfLY0NSyIV6RmwgoWfIEN631ADNualzb/qRo3HLj44\niRW1wP0xdsNJ4Z6v+7mpv/xe/JiEdl535aU+fdbgaJ+JcmzF60neFQkHRF/7V10r\n3deLBKep7I/olaWqAldi3L76Z6WsuQwMZ9eMC/UCgYBDSlrsK4RWBS1nEaVnw2Kn\nS+vfhTPL4TIVvPvlPus2IuLx1btZCnHRJ7cUns8OghSDtI9xCAxksF3SLbdWIgCi\nKDllP1IrciYNzpsb0J5lRmpe77jmFW4fRKT3QAKUzFkui0KwOC9IoZyvAsp/aJ9K\neHpyJupn006fp0svDp8IHg==\n-----END PRIVATE KEY-----\n",
-  "client_email": "rianlogbookmonitor@neon-slate-390622.iam.gserviceaccount.com",
-  "client_id": "103030418875489168777",
+  "project_id": "computeenginerlearning",
+  "private_key_id": "c11276ae36ed190654401af77e6ec407b448146d",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC9/sfE2DDxUTjU\n2z70cjGYOSKj2ZjsU13qLER2oqA44DNulaNJinwUmLM0qZWc2cMlfhUAgUsu0CmO\ng6W/MPuZWQ3T1D1VedROdLnumU0HEj1lPS4a+7J9u1KLmgGcEkeQPagZ+SdpYrYZ\nm5JK2vI/1B/u492q0duKbRinSd3yhhi0ECuh/K2QUuQi+U95bdU59/Pswqtds7sB\nfl9ARbiQCfQ4JX/aXTCDyMLDlQbP7392BqdRNCIRJQSxhE4h1wATB/7Ntj//r+ye\ncj8n69OBglP9C3GAG2gYq7dL+2HFaDMPoeTTuBbZfJDZ/QtdlBWhg7Ehsv4zbDfA\nKfCOR9M/AgMBAAECggEAA4BnE8snjRhXSPZTdjOGk3d2GnlKVrdV80NmmEh4qyOt\nVFFAsFHI5fjx0JDRjOb8hZE0d40VIs3mU4CR9PCaVSIC3bplzlCk/N8s2ry2N+D6\nWFvPdjguUB/m2Q4junR3H4LrZAh8qqC4RMeNDivJLCuk0lpzvZAJkPG1cxvVkdXR\nBeQ2NEHLYNgCKy3GEQPi5MEQLILSeKLDwMgtOkYRn/kMVREwbQ/vMAQgr+vb0X6f\nmLauouswB1R0jvfCyo5+e8lG2kmojtue6hODS5Gcwa91WBXDuJfXPXQ1F4AT/8/o\nAjIxtoJB3qyB0RHZiUpYQATguNW0TMGHE56JlkDpGQKBgQDvDwhV5xAbMy4MJONj\n1bWc8RYmOVrgitZrTrZIzqX1vMgqQYppgiLnowWK7AV3BDsSz+pg8Pkim88M5w1a\nxDLY10SyzxctSRyU2NMG8pLgXV0oBKA+Q2MQe6aP2WXxCKaNPgE+pZfDZx/5u/Zt\n2eVKOs+nXdg8eFklMvgh+hJP5wKBgQDLdaU4//wWBqg28RAcSprQQhvbkVpfX8LX\nVhqRxhgHWMizb9Ym7e3b8kCUIsIGjdPqOnOYPN9FJpmReIOBuo5ZZ/hKSQx4zIKB\ne/wdu5EMKKgUb0yvZja8KAj1oXWTzY5JtHoO6TatU/kU9r6ZvX/o5B13profj/Gn\nu6h0gl7W6QKBgB6chiy50c4p15OmhZebHg5isLtkTMbEAIDtK1pXW9kDu33ttpOc\nHmwa6/LGFk0PNaFLDnArazuLSBAW5hbhWMF7j0h2TDl4SzikKyGQnk4spmkhboOK\njXzm2IVDCVK8ENe1QOOMwMo8wlNwRjX62OmQbla4JaBYqNGinTN8miuxAoGABb/h\nV2cEfKrbfhH53pLNJS15FA9bem5+Vw972Lq8WxjLMybp6le27Qw/fvAsg3rmjivw\nsFCoDpA0rsO1E6lt9GDXx2GhFJjS503VphFy2+EaPtmWVS6SRWbsOeTCKdcZOkP7\nXwiAHw3McCc446dTQgWQP51ajSHINnE7JW+5tmECgYEAwXs2PeNGcLZtvKkiXKeq\nbwkc7JkZ67dGFvQiX6QERe4+/+hciitSmnHzD9qYZqOVXgNW+gYwXfhXfvRlmEu6\nnqjiI3mQTq+73AnDJlPAdp1qwn2UiOmtvlcpjronZGqvql2AuFAfQ2xR4pVYbjvD\naBoduq2MdEFPqW1OUSjRBzg=\n-----END PRIVATE KEY-----\n",
+  "client_email": "google-sheet@computeenginerlearning.iam.gserviceaccount.com",
+  "client_id": "104241420765176716134",
   "auth_uri": "https://accounts.google.com/o/oauth2/auth",
   "token_uri": "https://oauth2.googleapis.com/token",
   "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/rianlogbookmonitor%40neon-slate-390622.iam.gserviceaccount.com",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/google-sheet%40computeenginerlearning.iam.gserviceaccount.com",
   "universe_domain": "googleapis.com"
 }
 
 preorder = {
-    "start_code": '/Users/rian/Documents/Github/WPAutomate/startcode.json',
-    "po_expire": '/Users/rian/Documents/Github/WPAutomate/po_expire.json',
-    "customer_names": '/Users/rian/Documents/Github/WPAutomate/customer_names.json',\
-    "po_fetched": '/Users/rian/Documents/Github/WPAutomate/PO_fetched.csv',
-    "so_cleaned": '/Users/rian/Documents/Github/WPAutomate/SO_cleaned.csv',
+    "start_code": '/Users/rian/Documents/Github/WPAutomate/env/startcode.json',
+    "po_expire": '/Users/rian/Documents/Github/WPAutomate/env/po_expire.json',
+    "customer_names": '/Users/rian/Documents/Github/WPAutomate/env/customer_names.json',\
+    "po_fetched": '/Users/rian/Documents/Github/WPAutomate/env/PO_fetched.csv',
+    "so_cleaned": '/Users/rian/Documents/Github/WPAutomate/env/SO_cleaned.csv',
     "input_file": r'/Volumes/PUBLIC/SC - RIAN (Intern)/1.csv'
 }
 

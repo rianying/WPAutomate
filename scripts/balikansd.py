@@ -3,7 +3,10 @@ from datetime import datetime
 import subprocess
 import platform
 import os
-from WPAutomate.env import env
+from pathlib import Path
+import sys
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+from env import env
 
 """
 Script ini untuk membalikan sd.csv (balikan sd) menjadi format

@@ -1,6 +1,7 @@
 import subprocess
 import glob
 import os
+import argparse
 
 # Define the path to the scripts directory
 scripts_dir = os.path.join(os.getcwd(), 'scripts')
@@ -26,7 +27,7 @@ def get_script_description(path):
 
 def list_scripts():
     # Use glob to find all .py files in the scripts directory
-    script_paths = glob.glob(os.path.join(scripts_dir, '*.py'))
+    script_paths = sorted(glob.glob(os.path.join(scripts_dir, '*.py')))
     script_names = [os.path.basename(path) for path in script_paths]  # Extract file names
 
     print("\n\nWhich script do you want to run?\n")
@@ -49,18 +50,30 @@ def run_script(script_path):
         print(e)
 
 if __name__ == "__main__":
-    while True:
-        # Get the full paths of scripts to run
-        script_paths = list_scripts()
-
-        try:
-            choice = int(input("Enter the number of the script (0 to exit): "))
-            if choice == 0:
-                break
-            if 1 <= choice <= len(script_paths):
-                script_to_run = script_paths[choice - 1]
-                run_script(script_to_run)
-            else:
-                print("Invalid choice. Please enter a valid number.")
-        except ValueError:
-            print("Invalid input. Please enter a number.")
+    # Set up argparse to accept a script name as an optional argument
+    parser = argparse.ArgumentParser(description="Run a specified script or display a menu to choose one.")
+    parser.add_argument('script_name', nargs='?', help='The name of the script to run', default=None)
+    args = parser.parse_args()
+    
+    # If a script name was provided, run that script
+    if args.script_name:
+        script_path = os.path.join(scripts_dir, args.script_name)
+        if os.path.isfile(script_path) and script_path.endswith('.py'):
+            run_script(script_path)
+        else:
+            print(f"Script {args.script_name} does not exist or is not a .py file.")
+    else:
+        # Interactive prompt to choose a script to run
+        while True:
+            script_paths = list_scripts()
+            try:
+                choice = int(input("Enter the number of the script (0 to exit): "))
+                if choice == 0:
+                    break
+                if 1 <= choice <= len(script_paths):
+                    script_to_run = script_paths[choice - 1]
+                    run_script(script_to_run)
+                else:
+                    print("Invalid choice. Please enter a valid number.")
+            except ValueError:
+                print("Invalid input. Please enter a number.")

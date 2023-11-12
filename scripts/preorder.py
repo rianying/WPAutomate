@@ -9,14 +9,17 @@ import math
 import platform
 import time
 import re
-from WPAutomate.env import env
+from pathlib import Path
+import sys
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+from env import env
 
 """
 Script otomasi preorder dan validasi PO
 """
 
 # Functions from fetch_PO.py
-start_code_path = env.preorder['start_code_csv']
+start_code_path = env.preorder['start_code']
 def clean(input_file, output_file):
     data = pd.read_csv(input_file, sep=';', skiprows=4)
     data.rename(columns={'Tgl Pesan': 'order_date', 'Unnamed: 2': 'no_SO', 'No. Pesanan': 'customer_number', 'Unnamed: 4': 'customer_name', 'Unnamed: 6': 'no_PO'}, inplace=True)
