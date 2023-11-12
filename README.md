@@ -1,90 +1,48 @@
-
 ![Project Logo](https://manggalla.com/beta/wp-content/uploads/2023/02/Logo-SMR-1.png)
+# WPAutomate
 
----
-
-# Python Script Collection
-
-A collection of Python scripts for various tasks, including data processing, SQL query generation, and more.
-
-## Table of Contents
-
-- [Introduction](#introduction)
-- [Scripts](#scripts)
-  - [validatemac.py](#validatemacpy)
-  - [validatewindows.py](#validatewindowspy)
-  - [fetch_PO.py](#fetch_popy)
-  - [balikansf.py](#balikansfpy)
-  - [invoice_time.py](#invoice_timepy)
-  - [main.py](#mainpy)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-
-## Introduction
-
-This repository contains a collection of Python scripts designed to perform various tasks, from data validation and processing to SQL query generation. Each script serves a specific purpose and can be used individually or as part of a larger workflow.
+WPAutomate is a collection of scripts designed to automate SMR's OSC Intern Jobs. This repository contains scripts for environment setup, main application logic, and specific automated tasks such as handling depot operations, managing new customers, and processing pre-orders.
 
 ## Scripts
 
-### validatemac.py
+### Environment Setup
+- `env/env.py`: Manages environment variables and configurations for the automation scripts.
 
-This script is for Mac-OS and it reads a content from a CSV file, validates them, and generates SQL queries for insertion into a database. It calculates business days, generates timestamps, and handles customer-specific logic.
+### Main Application
+- `main.py`: Serves as the entry point for executing the automated tasks defined in the scripts.
 
-### validatewindows.py
+### Dependencies
+- `requirements.txt`: Contains all the necessary Python packages required to run the scripts.
 
-A GUI-based script that validates content for windows OS. It prompts users for a password, checks it against a stored hash, and performs actions accordingly. It also generates SQL queries for insertion based on user input.
+### Automated Tasks
+- `scripts/balikandepo.py`: Handles the documents associated with depo and have it ready to paste into excel.
+- `scripts/balikanidm.py`: Handles the documents associated with IDM and have it ready to paste into excel.
+- `scripts/balikansat.py`: Handles the documents associated with SAT and have it ready to paste into excel.
+- `scripts/balikansd.py`: Handles the documents associated with SD and have it ready to paste into excel.
+- `scripts/balikansf.py`: Handles the documents associated with SF and have it ready to paste into excel.
+- `scripts/monitor.py`: Monitors the status and health of various automated processes.
+- `scripts/preorder.py`: Manages the pre-ordering system, from taking orders to processing them.
+- `scripts/validate.py`: Validates data or process integrity before proceeding with automation tasks.
 
-### fetch_PO.py
+## Installation
 
-This script cleans and processes data from a CSV file, extracting relevant information. It allows users to filter data based on specific criteria and generates SQL queries for insertion into a database.
+To install the required dependencies for WPAutomate, run the following command:
 
-### balikansf.py
-
-Reads data from a CSV file, transforms it by creating new rows for different document types, and generates SQL queries for insertion into a database. Transformed data is copied to the clipboard, and the original CSV file is removed.
-
-### invoice_time.py
-
-A GUI application that generates SQL UPDATE queries for updating 'invoice_time' in CSV data. Users can pick a CSV file, generate the query, and copy it to the clipboard. The selected CSV file is deleted after generating the query.
-
-### main.py
-
-This script demonstrates generating SQL queries from data processing to insertion. It reads data, performs transformations, and generates SQL queries for insertion into database tables.
+```bash
+pip install -r requirements.txt
+```
 
 ## Usage
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/your-repo.git
-   cd your-repo
-   ```
+To use the automation scripts, set up the necessary environment variables in `env/env.py` and execute `main.py`
 
-2. Navigate to the relevant script's directory:
-   ```bash
-   cd script-directory
-   ```
-
-3. Install any required dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. Run the script:
-   ```bash
-   python script-name.py
-   ```
+```bash
+python main.py
+```
 
 ## Contributing
 
-Contributions to this collection of Python scripts are welcome. If you find a bug or want to add a new feature, feel free to open an issue or submit a pull request.
-
-### Notes:
-- Always ensure that the Excel file columns (`No PO`, `No SO`, and `Customer Name`) are correctly formatted.
-- It's good practice to review the generated SQL queries before executing them on a live database to ensure accuracy.
-
-Thank you for checking out my project! I hope it serves as an inspiration for others looking to streamline their daily tasks.
-
----
+Contributions to WPAutomate are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## Author
 
