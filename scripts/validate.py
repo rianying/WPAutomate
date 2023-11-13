@@ -68,7 +68,7 @@ def copy_to_clipboard(text):
         print("Generated SQL Queries have been copied to the clipboard!")
 
 if __name__ == "__main__":
-    CheckPO = env.validate_mac['CheckPO']  # Replace this with the actual path of your CSV file
+    CheckPO = env.validate['CheckPO']  # Replace this with the actual path of your CSV file
 
         # Delete the CSV file
     if os.path.exists(CheckPO):
