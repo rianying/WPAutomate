@@ -1,5 +1,3 @@
-
-.DS_Store
 /.venv
 # Ignore Python byte-compiled files
 *.pyc
@@ -7,5 +5,4 @@
 # Ignore other unnecessary files
 .db
 *.log
-.DS_Store
 .DS_Store
