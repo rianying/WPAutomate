@@ -45,6 +45,8 @@ To deactivate virtual environment, simply run the following command:
 deactivate
 ```
 
+Installing dependencies
+
 ```bash
 #For MacOS / Linux
 pip3 install -r requirements.txt
