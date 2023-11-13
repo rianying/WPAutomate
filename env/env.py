@@ -49,6 +49,6 @@ preorder = {
     "input_file": r'/Volumes/PUBLIC/SC - RIAN (Intern)/1.csv'
 }
 
-validate_mac = {
+validate = {
     'CheckPO': '/Users/rian/Downloads/CheckPO.csv'
 }
