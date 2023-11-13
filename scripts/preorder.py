@@ -120,6 +120,7 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
         print("\nSO file removed.")
         return None
     
+    new_customer_query_values = []
     preorder_query_values = []
     fat_start_values = []
     fat_finish_values = []
@@ -133,30 +134,38 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
         customer_number = row['customer_number']
         customer_name = customer_names.get(str(customer_number), '')
 
-        while customer_name == '':
+
+        if customer_name == '':
             customer_name = input(f"Enter customer name for {no_SO}: ").strip()
-            if customer_name:
-                code_market = input(f"Enter segment for {customer_name}: ")
-                regency = input(f"Enter regency for {customer_name}: ")
-                province = input(f"Enter province for {customer_name}: ")
+            code_market = input(f"Enter segment for {customer_name}: ")
+            regency = input(f"Enter regency for {customer_name}: ")
+            province = input(f"Enter province for {customer_name}: ")
 
-                # Initialize expedition_name to None to enter the loop
-                expedition_name = None
+            # Initialize expedition_name to None to enter the loop
 
-                # Keep asking until a valid pick is provided
-                while not expedition_name:
-                    pick = input("Expedition:\n 1. PT. SARWA MANGALLA RAYA\n 2. PT. Adika Express\nChoose (1/2): ").strip()
+            expedition_name = None
 
-                    # Use a dictionary to map the input to the expedition names
-                    expedition_options = {
-                        "1": "PT. SARWA MANGALLA RAYA",
-                        "2": "PT. Adika Express"
-                    }
+            # Keep asking until a valid pick is provided
+            while not expedition_name:
+                pick = input("Expedition:\n 1. PT. SARWA MANGALLA RAYA\n 2. PT. Adika Express\nChoose (1/2): ").strip()
 
-                    expedition_name = expedition_options.get(pick)
-                    if not expedition_name:
-                        print("Please enter a valid option (1 or 2).")
-                customer_address = input(f"Enter customer address for {customer_name}: ")
+                # Use a dictionary to map the input to the expedition names
+                expedition_options = {
+                    "1": "PT. SARWA MANGALLA RAYA",
+                    "2": "PT. Adika Express"
+                }
+
+                expedition_name = expedition_options.get(pick)
+                if not expedition_name:
+                    print("Please enter a valid option (1 or 2).")
+            customer_address = input(f"Enter customer address for {customer_name}: ")
+
+            new_customer_values = (
+            "('{}', '{}', '{}', '{}', '{}', '{}')".format(
+                code_market, customer_name, regency, province, expedition_name, customer_address
+                )
+            )
+            new_customer_query_values.append(new_customer_values)
 
 
             if customer_name not in customer_names.values():
@@ -165,7 +174,7 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
                     json.dump(customer_names, f, indent=4)
                 print(f"\nAdded '{customer_name}' for customer number {customer_number} in customer_names.json")
 
-                po_expire_data[customer_name] = 4
+                po_expire_data[customer_name] = 7
                 with open(po_expire_file, 'w') as f:
                     json.dump(po_expire_data, f, indent=4)
                 print(f"\nUpdated po_expire.json with default value for '{customer_name}'")
@@ -177,13 +186,6 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
             
             po_expire_value = po_expire_data.get(customer_name, 4)  # Default to 4 days if not found
             po_expired = order_time + np.timedelta64(po_expire_value, 'D')
-
-            new_customer_values = (
-                "('{}', '{}', '{}', '{}', '{}', '{}', '{}', '{}')".format(
-                    code_market, customer_name, regency, province, expedition_name, customer_address
-                )
-            )
-            
             
             pre_order_values = (
                 "('{}', '{}', '{}', '{}', '{}')".format(
@@ -219,30 +221,45 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
             )
             preorder_query_values.append(pre_order_values)
 
-    if new_customer_values:
-        insert_query = "INSERT INTO customer (code_market, customer_name, regency, province, expedition_name, customer_address) VALUES\n"
-        insert_query += ',\n'.join(new_customer_values) + ";\n/"
-        
-    if preorder_query_values:
-        insert_query = "INSERT INTO preorder (no_PO, no_SO, customer_name, order_time, po_expired) VALUES\n"
-        insert_query += ',\n'.join(preorder_query_values) + ";\n/"
-    
-    if fat_start_values:
-        insert_query += "\nINSERT INTO order_checking_start (no_SO, start_check, customer_name) VALUES\n"
-        insert_query += ',\n'.join(fat_start_values) + ";\n/"
-    
-    if fat_finish_values:
-        insert_query += "\nINSERT INTO orders_checking_finish (no_SO, no_SJ, FAT_checking_finish, customer, status_FAT) VALUES\n"
-        insert_query += ',\n'.join(fat_finish_values) + ";\n/"
+    full_query = ""
 
-    return insert_query
+    # Construct the new customer insert query if there are new customers to add
+    if new_customer_query_values:
+        new_customer_insert_query = "INSERT INTO customer (code_market, customer_name, regency, province, expedition_name, customer_address) VALUES\n"
+        new_customer_insert_query += ',\n'.join(new_customer_query_values) + ";\n/"
+        full_query += new_customer_insert_query  # Append this query to the full query
+
+    # Construct the preorder insert query
+    if preorder_query_values:
+        preorder_insert_query = "\nINSERT INTO preorder (no_PO, no_SO, customer_name, order_time, po_expired) VALUES\n"
+        preorder_insert_query += ',\n'.join(preorder_query_values) + ";\n/"
+        full_query += preorder_insert_query  # Append this query to the full query
+
+    # Construct the order checking start insert query
+    if fat_start_values:
+        fat_start_insert_query = "\nINSERT INTO order_checking_start (no_SO, start_check, customer_name) VALUES\n"
+        fat_start_insert_query += ',\n'.join(fat_start_values) + ";\n/"
+        full_query += fat_start_insert_query  # Append this query to the full query
+
+    # Construct the order checking finish insert query
+    if fat_finish_values:
+        fat_finish_insert_query = "\nINSERT INTO orders_checking_finish (no_SO, no_SJ, FAT_checking_finish, customer, status_FAT) VALUES\n"
+        fat_finish_insert_query += ',\n'.join(fat_finish_values) + ";\n/"
+        full_query += fat_finish_insert_query  # Append this query to the full query
+
+    # Print all new customer queries for debugging purposes
+    print("New Customer Queries: ", new_customer_query_values)
+
+    # Return the full combined query
+    return full_query
+
 
 def copy_to_clipboard(text):
     try:
-        if platform.system == 'Darwin':
+        if platform.system() == 'Darwin':
             subprocess.run(['pbcopy'], input=text.encode('utf-8'), check=True)
             print("\nQuery copied to clipboard.")
-        elif platform.system == 'Windows':
+        elif platform.system() == 'Windows':
             subprocess.run(['clip'], input=text.encode('utf-8'), check=True)
             print("\nQuery copied to clipboard.")
         else:

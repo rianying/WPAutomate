@@ -21,8 +21,10 @@ WPAutomate is a collection of scripts designed to automate SMR's OSC Intern Jobs
 - `scripts/balikansd.py`: Handles the documents associated with SD and have it ready to paste into excel.
 - `scripts/balikansf.py`: Handles the documents associated with SF and have it ready to paste into excel.
 - `scripts/monitor.py`: Monitors the status and health of various automated processes.
-- `scripts/preorder.py`: Manages the pre-ordering system, from taking orders to processing them.
-- `scripts/validate.py`: Validates data or process integrity before proceeding with automation tasks.
+    #### Might need to register number through Twilio Sandbox. Send "join people-does" to +1 415 523-8886 or click [this link](https://wa.me/14155238886?text=join%20people-does)
+- `scripts/preorder.py`: Manages the pre-ordering data, from cleaning, filtering, sorting, to generating the SQL query.
+    #### If customer name isn't registered on the customer_names.json, it will prompt for the corresponding customer information.
+- `scripts/validate.py`: Manual FAT Validates.
 
 ## Installation
 
