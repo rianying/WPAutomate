@@ -57,31 +57,28 @@ def show_help():
 if __name__ == "__main__":
     # Set up argparse to accept a script name as an optional argument
     parser = argparse.ArgumentParser(description="Run a specified script or display a menu to choose one.")
-    parser.add_argument('script_name', nargs='?', help='The name of the script to run', default=None)
-    args, unknown = parser.parse_known_args()
-    
-    # Check for help flags in the unknown arguments
-    if any(help_flag in unknown for help_flag in ('-help', '--h', '?')):
-        show_help()  # Call the show_help function to display the help message
-    elif args.script_name:
-        # If a script name was provided, run that script
-        script_path = os.path.join(scripts_dir, args.script_name)
-        if os.path.isfile(script_path) and script_path.endswith('.py'):
+    parser.add_argument('script_name', nargs='?', help='The name of the script to run without the .py extension', default=None)
+    args = parser.parse_args()
+
+    # Adjust the logic to check for .py extension
+    if args.script_name:
+        # Add the .py extension if it's not already there
+        script_name_with_extension = args.script_name if args.script_name.endswith('.py') else f"{args.script_name}.py"
+        script_path = os.path.join(scripts_dir, script_name_with_extension)
+        
+        if os.path.isfile(script_path):
             run_script(script_path)
         else:
-            print(f"Script {args.script_name} does not exist or is not a .py file.")
+            print(f"Script {script_name_with_extension} does not exist or is not a .py file.")
     else:
         # Interactive prompt to choose a script to run
         while True:
             script_paths = list_scripts()
             try:
                 choice = input("Enter the number of the script (0 to exit): ")
-                if choice in ('-?', '-help', '--h'):
-                    show_help()  # Display help message if help flags are input during prompt
-                    continue
-                choice = int(choice)  # Convert input to int for selection
-                if choice == 0:
+                if choice == '0':
                     break
+                choice = int(choice)  # Convert input to int for selection
                 if 1 <= choice <= len(script_paths):
                     script_to_run = script_paths[choice - 1]
                     run_script(script_to_run)
