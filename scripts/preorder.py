@@ -126,58 +126,62 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
     fat_finish_values = []
 
     for index, row in df.iterrows():
+
+        customer_number = row['customer_number']
+        if str(customer_number).startswith('MT-KF'):
+            continue
+
         order_time = np.datetime64(row['order_date'])
 
         no_PO = '' if isinstance(row['no_PO'], float) and math.isnan(row['no_PO']) else row['no_PO']
         no_SO = '' if isinstance(row['no_SO'], float) and math.isnan(row['no_SO']) else row['no_SO']
         
-        customer_number = row['customer_number']
         customer_name = customer_names.get(str(customer_number), '')
 
 
         if customer_name == '':
-            customer_name = input(f"Enter customer name for {no_SO}: ").strip()
-            code_market = input(f"Enter segment for {customer_name}: ")
-            regency = input(f"Enter regency for {customer_name}: ")
-            province = input(f"Enter province for {customer_name}: ")
+            customer_name_input = input(f"Enter customer name for {no_SO}: ").strip()
+            if customer_name_input not in customer_names.values():
+                code_market = input(f"Enter segment for {customer_name_input}: ")
+                regency = input(f"Enter regency for {customer_name_input}: ")
+                province = input(f"Enter province for {customer_name_input}: ")
+                customer_address = input(f"Enter customer address for {customer_name_input}: ")
+                # Initialize expedition_name to None to enter the loop
 
-            # Initialize expedition_name to None to enter the loop
+                expedition_name = None
 
-            expedition_name = None
+                # Keep asking until a valid pick is provided
+                while not expedition_name:
+                    pick = input("Expedition:\n 1. PT. SARWA MANGALLA RAYA\n 2. PT. Adika Express\nChoose (1/2): ").strip()
 
-            # Keep asking until a valid pick is provided
-            while not expedition_name:
-                pick = input("Expedition:\n 1. PT. SARWA MANGALLA RAYA\n 2. PT. Adika Express\nChoose (1/2): ").strip()
+                    # Use a dictionary to map the input to the expedition names
+                    expedition_options = {
+                        "1": "PT. SARWA MANGALLA RAYA",
+                        "2": "PT. Adika Express"
+                    }
 
-                # Use a dictionary to map the input to the expedition names
-                expedition_options = {
-                    "1": "PT. SARWA MANGALLA RAYA",
-                    "2": "PT. Adika Express"
-                }
+                    expedition_name = expedition_options.get(pick)
+                    if not expedition_name:
+                        print("Please enter a valid option (1 or 2).")
 
-                expedition_name = expedition_options.get(pick)
-                if not expedition_name:
-                    print("Please enter a valid option (1 or 2).")
-            customer_address = input(f"Enter customer address for {customer_name}: ")
-
-            new_customer_values = (
-            "('{}', '{}', '{}', '{}', '{}', '{}')".format(
-                code_market, customer_name, regency, province, expedition_name, customer_address
+                new_customer_values = (
+                "('{}', '{}', '{}', '{}', '{}', '{}')".format(
+                    code_market, customer_name_input, regency, province, expedition_name, customer_address
+                    )
                 )
-            )
-            new_customer_query_values.append(new_customer_values)
+                new_customer_query_values.append(new_customer_values)
 
 
-            if customer_name not in customer_names.values():
-                customer_names[str(customer_number)] = customer_name
+            if customer_name_input not in customer_names.values():
+                customer_names[str(customer_number)] = customer_name_input
                 with open(customer_names_json, 'w') as f:
                     json.dump(customer_names, f, indent=4)
-                print(f"\nAdded '{customer_name}' for customer number {customer_number} in customer_names.json")
+                print(f"\nAdded '{customer_name_input}' for customer number {customer_number} in customer_names.json")
 
-                po_expire_data[customer_name] = 7
+                po_expire_data[customer_name_input] = 7
                 with open(po_expire_file, 'w') as f:
                     json.dump(po_expire_data, f, indent=4)
-                print(f"\nUpdated po_expire.json with default value for '{customer_name}'")
+                print(f"\nUpdated po_expire.json with default value for '{customer_name_input}'")
         
         if 'SO' in no_SO:
             fat_random_minutes = random.randint(1, 10)
