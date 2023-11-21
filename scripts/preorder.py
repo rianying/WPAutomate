@@ -284,37 +284,35 @@ if __name__ == "__main__":
         po_expire_data = json.load(f)
 
     try:
-        while True:
-            input_file = env.preorder['input_file']
+        input_file = env.preorder['input_file']
 
-            if os.path.exists(input_file):
-                try:
-                    clean(input_file, cleaned_file)
-                    cleaned_data = pd.read_csv(cleaned_file)
-                    process_csv(cleaned_data)
-                    os.remove(cleaned_file)
-                    print(f'\n{cleaned_file} has been removed.')
-                except Exception as e:
-                    print(f'\n\nError: {e}')
-            
-                if os.path.exists(po_fetched):
-                    query = generate_single_query(po_fetched, customer_names, po_expire_data)
-                    if query is not None:
-                        copy_to_clipboard(query)
-                        os.remove(po_fetched)
-                        print("\nCSV file removed.")
-                        os.remove(input_file)
-                        print("\nSO file removed.")
-                else:
-                    print(f"\nCSV file '{po_fetched}' does not exist.")
+        if os.path.exists(input_file):
+            try:
+                clean(input_file, cleaned_file)
+                cleaned_data = pd.read_csv(cleaned_file)
+                process_csv(cleaned_data)
+                os.remove(cleaned_file)
+                print(f'\n{cleaned_file} has been removed.')
+            except Exception as e:
+                print(f'\n\nError: {e}')
+        
+            if os.path.exists(po_fetched):
+                query = generate_single_query(po_fetched, customer_names, po_expire_data)
+                if query is not None:
+                    copy_to_clipboard(query)
+                    os.remove(po_fetched)
+                    print("\nCSV file removed.")
+                    os.remove(input_file)
+                    print("\nSO file removed.")
             else:
-                print("\nNo new SO")
-            #PRINT TIME NOW
-            now = datetime.now()
-            current_time = now.strftime("%H:%M:%S")
-            print("\nCurrent Time = {}\n".format(current_time))
-            time.sleep(3)
-    
+                print(f"\nCSV file '{po_fetched}' does not exist.")
+        else:
+            print("\nNo new SO")
+        #PRINT TIME NOW
+        now = datetime.now()
+        current_time = now.strftime("%H:%M:%S")
+        print("\nCurrent Time = {}\n".format(current_time))
+        time.sleep(3)
     except KeyboardInterrupt:
         print("\nExiting the script. Goodbye!")
         # Here, you might perform any cleanup operations or save logs before exiting.

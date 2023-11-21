@@ -9,3 +9,10 @@
 
 # Ignore __pycache__ directory
 /env/__pycache__/
+
+*.ipynb
+*.xlsx
+leet.py
+customer_names.csv
+wp_customer.csv
+insert.py
