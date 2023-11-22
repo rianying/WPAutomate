@@ -16,3 +16,4 @@ leet.py
 customer_names.csv
 wp_customer.csv
 insert.py
+*.csv
