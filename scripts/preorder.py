@@ -152,11 +152,11 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
 
                 # Keep asking until a valid pick is provided
                 while not expedition_name:
-                    pick = input("Expedition:\n 1. PT. SARWA MANGALLA RAYA\n 2. PT. Adika Express\nChoose (1/2): ").strip()
+                    pick = input("Expedition:\n 1. PT. SARWA MANGGALLA RAYA\n 2. PT. Adika Express\nChoose (1/2): ").strip()
 
                     # Use a dictionary to map the input to the expedition names
                     expedition_options = {
-                        "1": "PT. SARWA MANGALLA RAYA",
+                        "1": "PT. SARWA MANGGALLA RAYA",
                         "2": "PT. Adika Express"
                     }
 

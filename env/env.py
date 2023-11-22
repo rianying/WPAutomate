@@ -52,3 +52,16 @@ preorder = {
 validate = {
     'CheckPO': '/Users/rian/Downloads/CheckPO.csv'
 }
+
+insertSO = {
+    "start_code": '/Users/rian/Documents/Github/WPAutomate/env/startcode.json',
+    "po_expire": '/Users/rian/Documents/Github/WPAutomate/env/po_expire.json',
+    "customer_names": '/Users/rian/Documents/Github/WPAutomate/env/customer_names.json',\
+    "input_file": r'/Volumes/PUBLIC/SC - RIAN (Intern)/SO.csv'
+}
+insertFaktur= {
+    "start_code": '/Users/rian/Documents/Github/WPAutomate/env/startcodefaktur.json',
+    "po_expire": '/Users/rian/Documents/Github/WPAutomate/env/po_expirefaktur.json',
+    "customer_names": '/Users/rian/Documents/Github/WPAutomate/env/customer_namesfaktur.json',\
+    "input_file": r'/Volumes/PUBLIC/SC - RIAN (Intern)/faktur.csv'
+}
