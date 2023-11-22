@@ -43,7 +43,7 @@ google_env = {
 preorder = {
     "start_code": '/Users/rian/Documents/Github/WPAutomate/env/startcode.json',
     "po_expire": '/Users/rian/Documents/Github/WPAutomate/env/po_expire.json',
-    "customer_names": '/Users/rian/Documents/Github/WPAutomate/env/customer_names.json',\
+    "customer_names": '/Users/rian/Documents/Github/WPAutomate/env/customer_names.json',
     "po_fetched": '/Users/rian/Documents/Github/WPAutomate/env/PO_fetched.csv',
     "so_cleaned": '/Users/rian/Documents/Github/WPAutomate/env/SO_cleaned.csv',
     "input_file": r'/Volumes/PUBLIC/SC - RIAN (Intern)/1.csv'
@@ -53,15 +53,10 @@ validate = {
     'CheckPO': '/Users/rian/Downloads/CheckPO.csv'
 }
 
-insertSO = {
+insert = {
     "start_code": '/Users/rian/Documents/Github/WPAutomate/env/startcode.json',
     "po_expire": '/Users/rian/Documents/Github/WPAutomate/env/po_expire.json',
-    "customer_names": '/Users/rian/Documents/Github/WPAutomate/env/customer_names.json',\
-    "input_file": r'/Volumes/PUBLIC/SC - RIAN (Intern)/SO.csv'
-}
-insertFaktur= {
-    "start_code": '/Users/rian/Documents/Github/WPAutomate/env/startcodefaktur.json',
-    "po_expire": '/Users/rian/Documents/Github/WPAutomate/env/po_expirefaktur.json',
-    "customer_names": '/Users/rian/Documents/Github/WPAutomate/env/customer_namesfaktur.json',\
-    "input_file": r'/Volumes/PUBLIC/SC - RIAN (Intern)/faktur.csv'
+    "customer_names": '/Users/rian/Documents/Github/WPAutomate/env/customer_names.json',
+    "smr": r'/Volumes/PUBLIC/SC-Humay/SC_DATAMART/SC_02. Sales_Order.xls',
+    "panel": r'/Volumes/PUBLIC/SC-Humay/SC_DATAMART/SC_01. Invoice_ASW.xls'
 }

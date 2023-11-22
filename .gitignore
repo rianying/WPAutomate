@@ -12,6 +12,5 @@
 
 *.ipynb
 *.xlsx
-insert.py
 *.csv
-env.py
+env/
