@@ -8,6 +8,7 @@ import json
 import shutil
 import time
 import sys
+from tqdm import tqdm
 from datetime import datetime
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
@@ -47,7 +48,7 @@ def process(data):
         
         results = pd.DataFrame()
 
-        for segment, startcode in segments_start_code.items():
+        for segment, startcode in tqdm(segments_start_code.items(), desc='Processing segments'):
             try:
                 pattern = f"/SMR/({segment}/|{segment}$)"
                 segment_match = df['noSO'].str.extract(pattern)
@@ -100,7 +101,7 @@ def process(data):
 
         results = pd.DataFrame()
 
-        for segment, startcode in segments_start_code.items():
+        for segment, startcode in tqdm(segments_start_code.items(), desc='Processing segments'):
             try:
                 pattern = f"/PANEL/({segment}/|{segment}$)"
                 segment_match = df['faktur'].str.extract(pattern)
@@ -156,7 +157,7 @@ def generate_query(data, customer_names, po_expire):
     validation_query_values = []
 
     if data['type'].iloc[0] == 'smr':
-        for index, row in data.iterrows():
+        for index, row in tqdm(data.iterrows(), total=data.shape[0], desc='Generating queries'):
             customer_number = row['idCustomer']
             customer_name = customer_names.get(str(customer_number), '')
             order_time = np.datetime64(row['tanggal'])
@@ -175,9 +176,9 @@ def generate_query(data, customer_names, po_expire):
                         "('{}','{}','{}','{}','{}')".format(
                             customer_number,
                             customer_name_input,
+                            customer_address,
                             regency,
                             province,
-                            customer_address,
                         )
                     )
                     new_customer_query_values.append(new_customer_value)
@@ -202,22 +203,22 @@ def generate_query(data, customer_names, po_expire):
 
             preorder_value = (
                 "('{}','{}','{}','{}','{}','{}','{}','{}','{}','{}')".format(
+                    no_inv,
+                    no_po,
+                    'non-panel',
                     customer_number,
                     customer_name,
                     order_time,
-                    no_inv,
-                    no_po,
-                    row['sales'],
-                    row['termPembayaran'],
-                    row['type'],
                     po_expired,
-                    row['tanggal']
+                    row['termPembayaran'],
+                    row['sales'],
+                    row['keterangan']
                 )
             )
             preorder_query_values.append(preorder_value)
 
             validation_value = (
-                "('{}','{}','{}','{}','{}','{}','{}','{}','{}','{}')".format(
+                "('{}','{}','{}','{}','{}')".format(
                     no_inv,
                     start_time,
                     finish_time,
@@ -231,7 +232,7 @@ def generate_query(data, customer_names, po_expire):
 
         if new_customer_query_values:
             new_customer_query = (
-                "INSERT INTO customer (idCustomer, namaCustomer, regency, province, address) VALUES {}".format(
+                "INSERT INTO customer (customer_id, customer_name, customer_address, regency, province) VALUES {}".format(
                     ','.join(new_customer_query_values)
                 )
             )
@@ -239,7 +240,7 @@ def generate_query(data, customer_names, po_expire):
         
         if preorder_query_values:
             preorder_query = (
-                "INSERT INTO preorder (idCustomer, namaCustomer, orderTime, noInv, noPO, sales, termPembayaran, type, poExpired, tanggal) VALUES {}".format(
+                "INSERT INTO preorder (inv_number, po_number, channel, customer_id, customer_name, order_time, po_expired, term_payment, sales_name, note) VALUES {}".format(
                     ','.join(preorder_query_values)
                 )
             )
@@ -247,7 +248,7 @@ def generate_query(data, customer_names, po_expire):
         
         if validation_query_values:
             validation_query = (
-                "INSERT INTO validation (noInv, startTime, finishTime, status, notes) VALUES {}".format(
+                "INSERT INTO validation (inv_number, start_check, finish_check, fat_status, note) VALUES {}".format(
                     ','.join(validation_query_values)
                 )
             )
@@ -257,7 +258,7 @@ def generate_query(data, customer_names, po_expire):
         return full_query
 
     elif data['type'].iloc[0] == 'panel':
-        for index, row in data.iterrows():
+        for index, row in tqdm(data.iterrows(), total=data.shape[0], desc='Generating queries'):
             customer_number = row['idCustomer']
             customer_name = customer_names.get(str(customer_number), '')
             order_time = np.datetime64(row['tanggal'])
@@ -276,9 +277,9 @@ def generate_query(data, customer_names, po_expire):
                         "('{}','{}','{}','{}','{}')".format(
                             customer_number,
                             customer_name_input,
+                            customer_address,
                             regency,
                             province,
-                            customer_address,
                         )
                     )
                     new_customer_query_values.append(new_customer_value)
@@ -302,35 +303,26 @@ def generate_query(data, customer_names, po_expire):
             po_expired = order_time + np.timedelta64(po_expire_value, 'D')
 
             preorder_value = (
-                "('{}','{}','{}','{}','{}','{}','{}','{}')".format(
-                    customer_name,
-                    order_time,
+                "('{}','{}','{}','{}','{}','{}','{}','{}','{}','{}')".format(
                     no_inv,
                     no_po,
-                    row['sales'],
-                    row['termPembayaran'],
+                    'non-panel',
+                    customer_number,
+                    customer_name,
+                    order_time,
                     po_expired,
-                    row['tanggal']
+                    row['termPembayaran'],
+                    row['sales'],
+                    row['keterangan']
                 )
             )
             preorder_query_values.append(preorder_value)
-
-            validation_value = (
-                "('{}','{}','{}','{}','{}','{}','{}','{}','{}','{}')".format(
-                    no_inv,
-                    start_time,
-                    finish_time,
-                    'Process',
-                    ''
-                )
-            )
-            validation_query_values.append(validation_value)
 
         full_query = ''
 
         if new_customer_query_values:
             new_customer_query = (
-                "INSERT INTO customer (idCustomer, namaCustomer, regency, province, address) VALUES {}".format(
+                "INSERT INTO customer (customer_id, customer_name, customer_address, regency, province) VALUES {}".format(
                     ','.join(new_customer_query_values)
                 )
             )
@@ -338,23 +330,15 @@ def generate_query(data, customer_names, po_expire):
         
         if preorder_query_values:
             preorder_query = (
-                "INSERT INTO preorder (namaCustomer, orderTime, noInv, noPO, sales, termPembayaran, poExpired, tanggal) VALUES {}".format(
+                "INSERT INTO preorder (inv_number, po_number, channel, customer_id, customer_name, order_time, po_expired, term_payment, sales_name, note) VALUES {}".format(
                     ','.join(preorder_query_values)
                 )
             )
             full_query += preorder_query + '\n\n'
 
-        if validation_query_values:
-            validation_query = (
-                "INSERT INTO validation (noInv, startTime, finishTime, status, notes) VALUES {}".format(
-                    ','.join(validation_query_values)
-                )
-            )
-            full_query += validation_query + '\n\n'
-
         print("New Customer log: \n{}".format(new_customer_query))
-
         return full_query
+    
     else:
         print('Invalid dataset')
 
