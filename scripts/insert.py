@@ -345,11 +345,10 @@ def generate_query(data, customer_names, po_expire):
 def insert(query):
     connection = pymysql.connect(host='192.168.1.219', user='root', password='sarwa', db='osc_clone')
     try:
+        query_lines = query.splitlines()
         with connection.cursor() as cursor:
-            cursor.execute(query) # execute query
-            # print each query line with format {query num}: {total query line}
-            for i, line in enumerate(query.splitlines()):
-                print(f"Executed: {i}: {line}")
+            for i, line in tqdm(enumerate(query_lines), total=len(query_lines), desc="Executing queries"):
+                cursor.execute(line)
         connection.commit() # commit changes
         print("Query executed successfully")
     except Exception as e:
