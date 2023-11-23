@@ -16,32 +16,63 @@ from env import env
 
 
 def clean(datapath):
+
+    header = [
+    'inv_number',
+    'po_number',
+    'channel',
+    'customer_id',
+    'customer_name',
+    'order_time',
+    'po_expired',
+    'term_payment',
+    'sales_name',
+    'note'
+]
+
+    combined = pd.DataFrame(columns=header)
+
     if datapath.contains('SC_02. Sales_Order.xls'):
-        smr = pd.read_excel(datapath, sheet_name='Sheet1')
+        smr = pd.read_excel(smr_path, sheet_name='Sheet1')
         smr = smr[['No. Pesanan', 'Tgl Pesan','No. Pelanggan','Nama Pelanggan', 'Nama Penjual', 'No. PO', 'Name Syarat Pembayaran']]
-        smr.rename(columns={'No. Pesanan': "noSO", 'Tgl Pesan': "tanggal", 'No. Pelanggan': "idCustomer", 'Nama Pelanggan': "namaCustomer",'Nama Penjual': "sales", 'No. PO': 'noPO' ,'Name Syarat Pembayaran Faktur': "termPembayaran"}, inplace=True)
-        smr = smr[~smr['namaCustomer'].isin(['APOTEK SUMBER SARI', 'APOTEK AIMAR'])]
-        smr = smr[~((smr['namaCustomer'] == 'APOTEK SWADAYA SEHAT') & (smr['idCustomer'].str.startswith('PNL')))]
-        smr.drop_duplicates(subset=['noSO'], inplace=True)
-        smr['type'] = 'smr'
-        return smr
-    elif datapath.contains('SC_01. Invoice_ASW.xls'):
-        panel = pd.read_excel(datapath, sheet_name='Sheet1')
-        panel = panel[['No. Faktur', 'Tgl Faktur', 'Keterangan', 'No. Pelanggan', 'Nama Pelanggan','Nama Penjual','Name Syarat Pembayaran Faktur']]
-        panel.rename(columns={'No. Faktur': "faktur", 'Tgl Faktur': "tanggal", 'Keterangan': 'keterangan', 'No. Pelanggan': "idCustomer", 'Nama Pelanggan': "namaCustomer",'Nama Penjual': "sales", 'Name Syarat Pembayaran Faktur': "termPembayaran"}, inplace=True)
-        panel['keterangan'].fillna('', inplace=True)
-        panel.drop_duplicates(subset=['faktur'], inplace=True)
-        panel['type'] = 'panel'
-        return panel
+        smr.rename(columns={'No. Pesanan': "inv_number", 'Tgl Pesan': "order_time", 'No. Pelanggan': "customer_id", 'Nama Pelanggan': "customer_name",'Nama Penjual': "sales_name", 'No. PO': 'po_number' ,'Name Syarat Pembayaran': "term_payment"}, inplace=True)
+        smr = smr[~smr['customer_name'].isin(['APOTEK SUMBER SARI', 'APOTEK AIMAR'])]
+        smr = smr[~((smr['customer_name'] == 'APOTEK SWADAYA SEHAT') & (smr['customer_id'].str.startswith('PNL')))]
+        smr.drop_duplicates(subset=['inv_number'], inplace=True)
+        smr['po_expired'] = ''
+        smr['channel'] = 'smr'
+        smr['note'] = ''
+        smr['term_payment'] = smr['term_payment'].str.replace('.', '')
+        smr.fillna('', inplace=True)
+        smr = smr[['inv_number','po_number','channel','customer_id','customer_name','order_time','po_expired','term_payment','sales_name','note']]
+        
+        combined = pd.concat([combined, smr], ignore_index=True)
+
+    elif datapath.contains('INV Panel.xlsx'):
+        panel = pd.read_excel(panel_path, sheet_name='tb_panel')
+        panel = panel[['No Faktur', 'Administration Time', 'Customer Name', 'Term Payment', 'Sales Name', 'Po Expired']]
+        panel.rename(columns={'No Faktur': "inv_number", 'Administration Time': "order_time", 'Customer Name': "customer_name",'Term Payment': 'term_payment', 'Sales Name': "sales_name", 'Po Expired': 'po_expired'}, inplace=True)
+        panel.drop_duplicates(subset=['inv_number'], inplace=True)
+        # convert po_expired into YYYY-MM-DD format
+        panel['po_expired'] = pd.to_datetime(panel['po_expired'], format='%d %b %Y')
+        panel['customer_id'] = ''
+        panel['channel'] = 'panel'
+        panel['po_number'] = ''
+        panel['note'] = ''
+        panel = panel[['inv_number','po_number','channel','customer_id','customer_name','order_time','po_expired','term_payment','sales_name','note']]
+
+        combined = pd.concat([combined, panel], ignore_index=True)
     else:
         print('Invalid dataset')
 
+    return combined
+
 def process(data):
     df = data.copy()
-    if df['type'].iloc[0] == 'smr':
+    if df['channel'].iloc[0] == 'smr':
         time_input =  pd.Timestamp.now().strftime('%H:"%M:%S')
-        df['tanggal'] = pd.to_datetime(df['tanggal'], format='%d %b %Y')
-        df['tanggal'] = df['tanggal'].dt.strftime('%Y-%m-%d') + ' ' + time_input
+        df['order_time'] = pd.to_datetime(df['order_time'], format='%d %b %Y')
+        df['order_time'] = df['order_time'].dt.strftime('%Y-%m-%d') + ' ' + time_input
 
         with open(start_code_smr, 'r') as file:
             segments_start_code = json.load(file)
@@ -51,7 +82,7 @@ def process(data):
         for segment, startcode in tqdm(segments_start_code.items(), desc='Processing segments'):
             try:
                 pattern = f"/SMR/({segment}/|{segment}$)"
-                segment_match = df['noSO'].str.extract(pattern)
+                segment_match = df['inv_number'].str.extract(pattern)
 
                 matched_rows = segment_match.dropna().index
 
@@ -71,7 +102,7 @@ def process(data):
 
                 start_range = f"SO/SMR/{segment}/{year}/{month}/{startcode}"
                 finish_range = start_range[:-4] + "9999"
-                result = df[df['noSO'].between(start_range, finish_range)]
+                result = df[df['inv_number'].between(start_range, finish_range)]
 
                 if result.empty:
                     print(f"\nNo sales entry found for segment {segment}. Skipping")
@@ -79,7 +110,7 @@ def process(data):
 
                 results = pd.concat([results, result])
 
-                used_codes = result['noSO'].apply(lambda x: int(x.split("/")[-1]))
+                used_codes = result['inv_number'].apply(lambda x: int(x.split("/")[-1]))
                 max = used_codes.max()
                 segments_start_code[segment] = str(max + 1).zfill(len(startcode))
             except Exception as e:
@@ -91,10 +122,10 @@ def process(data):
         
         return results
 
-    elif data['type'].iloc[0] == 'panel':
+    elif data['channel'].iloc[0] == 'panel':
         time_input = pd.Timestamp.now().strftime('%H:"%M:%S')
-        df['tanggal'] = pd.to_datetime(df['tanggal'], format='%d %b %Y')
-        df['tanggal'] = df['tanggal'].dt.strftime('%Y-%m-%d') + ' ' + time_input
+        df['order_time'] = pd.to_datetime(df['order_time'], format='%d %b %Y')
+        df['order_time'] = df['order_time'].dt.strftime('%Y-%m-%d') + ' ' + time_input
 
         with open(start_code_panel, 'r') as file:
             segments_start_code = json.load(file)
@@ -103,8 +134,8 @@ def process(data):
 
         for segment, startcode in tqdm(segments_start_code.items(), desc='Processing segments'):
             try:
-                pattern = f"/PANEL/({segment}/|{segment}$)"
-                segment_match = df['faktur'].str.extract(pattern)
+                pattern = f"INV/ASW/({segment}/|{segment}$)"
+                segment_match = df['inv_number'].str.extract(pattern)
 
                 matched_rows = segment_match.dropna().index
 
@@ -112,7 +143,7 @@ def process(data):
                     print(f"\nNo sales entry found for segment {segment}. Skipping")
                     continue
                 
-                segment_entry = df.loc[matched_rows[0], 'faktur']
+                segment_entry = df.loc[matched_rows[0], 'inv_number']
 
                 year_month_pattern = r"/(\d{2})/([A-Z]{1,3})/"
                 match = re.search(year_month_pattern, segment_entry)
@@ -122,9 +153,9 @@ def process(data):
                     print(f"\nFailed to extract year and month for segment {segment}. Skipping")
                     continue
 
-                start_range = f"INV/SMR/{segment}/{year}/{month}/{startcode}"
+                start_range = f"INV/ASW/{segment}/{year}/{month}/{startcode}"
                 finish_range = start_range[:-4] + "9999"
-                result = df[df['faktur'].between(start_range, finish_range)]
+                result = df[df['inv_number'].between(start_range, finish_range)]
 
                 if result.empty:
                     print(f"\nNo sales entry found for segment {segment}. Skipping")
@@ -132,7 +163,7 @@ def process(data):
 
                 results = pd.concat([results, result])
 
-                used_codes = result['faktur'].apply(lambda x: int(x.split("/")[-1]))
+                used_codes = result['inv_number'].apply(lambda x: int(x.split("/")[-1]))
                 max = used_codes.max()
                 segments_start_code[segment] = str(max + 1).zfill(len(startcode))
             except Exception as e:
@@ -156,17 +187,16 @@ def generate_query(data, customer_names, po_expire):
     preorder_query_values = []
     validation_query_values = []
 
-    if data['type'].iloc[0] == 'smr':
+    if data['channel'].iloc[0] == 'smr':
         for index, row in tqdm(data.iterrows(), total=data.shape[0], desc='Generating queries'):
-            customer_number = row['idCustomer']
+            customer_number = row['customer_id']
             customer_name = customer_names.get(str(customer_number), '')
-            order_time = np.datetime64(row['tanggal'])
-            no_so = '' if isinstance(row['noPO'], float) and math.isnan(row['noPO']) else row['noPO']
-            no_inv = no_so.replace('SO', 'INV')
-            no_po = '' if isinstance(row['noPO'], float) and math.isnan(row['noPO']) else row['noPO']
+            order_time = np.datetime64(row['order_time'])
+            no_inv = '' if isinstance(row['inv_number'], float) and math.isnan(row['inv_number']) else row['inv_number']
+            no_po = '' if isinstance(row['po_number'], float) and math.isnan(row['po_number']) else row['po_number']
 
             if customer_name == '':
-                customer_name_input = input(f"Enter customer name for {no_so}: ").strip()
+                customer_name_input = input(f"Enter customer name for {no_inv}: ").strip()
                 if customer_name_input not in customer_names.values():
                     regency = input(f"Enter regency for {customer_name_input}: ").strip()
                     province = input(f"Enter province for {customer_name_input}: ").strip()
@@ -210,9 +240,9 @@ def generate_query(data, customer_names, po_expire):
                     customer_name,
                     order_time,
                     po_expired,
-                    row['termPembayaran'],
-                    row['sales'],
-                    row['keterangan']
+                    row['term_payment'],
+                    row['sales_name'],
+                    row['note']
                 )
             )
             preorder_query_values.append(preorder_value)
@@ -257,17 +287,16 @@ def generate_query(data, customer_names, po_expire):
         print("New Customer log: \n{}".format(new_customer_query))
         return full_query
 
-    elif data['type'].iloc[0] == 'panel':
+    elif data['channel'].iloc[0] == 'panel':
         for index, row in tqdm(data.iterrows(), total=data.shape[0], desc='Generating queries'):
-            customer_number = row['idCustomer']
+            customer_number = row['customer_id']
             customer_name = customer_names.get(str(customer_number), '')
-            order_time = np.datetime64(row['tanggal'])
-            no_so = '' if isinstance(row['noPO'], float) and math.isnan(row['noPO']) else row['noPO']
-            no_inv = no_so.replace('SO', 'INV')
-            no_po = '' if isinstance(row['noPO'], float) and math.isnan(row['noPO']) else row['noPO']
+            order_time = np.datetime64(row['order_time'])
+            no_inv = row['inv_number']
+            no_po = ''
 
             if customer_name == '':
-                customer_name_input = input(f"Enter customer name for {no_so}: ").strip()
+                customer_name_input = input(f"Enter customer name for {no_inv}: ").strip()
                 if customer_name_input not in customer_names.values():
                     regency = input(f"Enter regency for {customer_name_input}: ").strip()
                     province = input(f"Enter province for {customer_name_input}: ").strip()
@@ -311,9 +340,9 @@ def generate_query(data, customer_names, po_expire):
                     customer_name,
                     order_time,
                     po_expired,
-                    row['termPembayaran'],
-                    row['sales'],
-                    row['keterangan']
+                    row['term_payment'],
+                    row['sales_name'],
+                    row['note']
                 )
             )
             preorder_query_values.append(preorder_value)
@@ -383,7 +412,7 @@ if __name__ == "__main__":
                     if query is not None:
                         insert(query)
                 # move file to 'ORIGINAL' folder inside SC_DATAMART/ORIGINAL folder
-                shutil.move(smr_path, smr_path.replace('SC_DATAMART', 'SC_DATAMART/ORIGINAL'))
+                shutil.move(smr_path, smr_path.replace('PANEL&SMR', 'PANEL&SMR/ORIGINAL'))
 
             elif os.path.exists(panel_path):
                 cleaned = clean(panel_path)
@@ -394,7 +423,7 @@ if __name__ == "__main__":
                     if query is not None:
                         insert(query)
                 # move file to 'ORIGINAL' folder inside SC_DATAMART/ORIGINAL folder
-                shutil.move(panel_path, panel_path.replace('SC_DATAMART', 'SC_DATAMART/ORIGINAL'))
+                shutil.move(panel_path, panel_path.replace('PANEL&SMR', 'PANEL&SMR/ORIGINAL'))
 
             else:
                 print('Waiting for file...')

@@ -58,6 +58,6 @@ insert = {
     "start_code_panel": '/Users/rian/Documents/Github/WPAutomate/env/startcodepanel.json',
     "po_expire": '/Users/rian/Documents/Github/WPAutomate/env/po_expire.json',
     "customer_names": '/Users/rian/Documents/Github/WPAutomate/env/customer_names.json',
-    "smr": r'/Volumes/PUBLIC/SC-Humay/SC_DATAMART/SC_02. Sales_Order.xls',
-    "panel": r'/Volumes/PUBLIC/SC-Humay/SC_DATAMART/SC_01. Invoice_ASW.xls'
+    "smr": r'/Volumes/PUBLIC/SC-Humay/SC_DATAMART/PANEL&SMR/INV SMR.xlsx',
+    "panel": r'/Volumes/PUBLIC/SC-Humay/SC_DATAMART/PANEL&SMR/INV Panel.xlsx'
 }
