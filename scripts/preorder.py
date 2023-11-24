@@ -107,7 +107,7 @@ def process_csv(data):
     print(f'\n{output_file} has been generated.')
 
     with open(start_code_path, 'w') as file:
-        json.dump(segments_startcodes, file)
+        json.dump(segments_startcodes, file, indent=4)
 
 # Functions from preorder.py
 

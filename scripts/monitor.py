@@ -8,7 +8,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 import json
 from datetime import datetime
-from env import env
+from env import tokens as env
 
 """
 Script ini untuk memonitor Logbook Google Sheets
