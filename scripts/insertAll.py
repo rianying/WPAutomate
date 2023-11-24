@@ -9,11 +9,19 @@ import shutil
 import time
 import sys
 from tqdm import tqdm
+import random
 from datetime import datetime
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
-from env import env
+from env import env, tokens
+from twilio.rest import Client
 
+twilio_account_sid = tokens.twilio_env['twilio_account_sid']
+twilio_auth_token = tokens.twilio_env['twilio_auth_token']
+twilio_phone_number = tokens.twilio_env['twilio_phone_number']
+to_phone_number = tokens.twilio_env['to_phone_number']
+
+twilio_client = Client(twilio_account_sid, twilio_auth_token)
 
 segment_mapping = {
     'SF/HQ': ('JAKARTA', 'DKI JAKARTA'),
@@ -47,6 +55,44 @@ segment_mapping = {
     'SF/PWT': ('PURWOKERTO', 'JAWA TIMUR'),
     'SF/DIY': ('YOGYAKARTA', 'DAERAH ISTIMEWA YOGYAKARTA'),
 }
+
+magic_loading_texts = [
+    "Performing dark magic. Sit tight",
+    "Performing magic on it",
+    "Conjuring code mysteries...",
+    "Weaving digital spells...",
+    "Summoning computational powers...",
+    "Casting bytes into spells...",
+    "Unleashing arcane algorithms...",
+    "Enchanting the data streams...",
+    "Channeling virtual energies...",
+    "Brewing a digital potion...",
+    "Mystifying the machine...",
+    "Invoking cyber sorcery...",
+    "Decrypting mystical secrets...",
+    "Activating wizardry protocols...",
+    "Harnessing magical bytes...",
+    "Entwining tech with magic...",
+    "Orchestrating an ethereal symphony...",
+    "Manipulating the fabric of code...",
+    "Crafting a spellbinding process...",
+    "Melding magic with mechanics...",
+    "Weaving a web of wonders...",
+    "Infusing magic into circuits...",
+    "Shaping the mystical matrix...",
+    "Engaging in digital alchemy...",
+    "Transmuting data into magic...",
+    "Evoking the spirits of silicon...",
+    "Drawing power from the ether(net)...",
+    "Enchanting the binary realm...",
+    "Whispers of wizardry in progress...",
+    "Dancing with digital demons...",
+    "Stirring the cauldron of creativity...",
+    "Unraveling the runes of programming..."
+]
+
+def bold(text):
+    return f"\033[1m{text}\033[0m"
 
 def extract_segment(inv_number, channel):
     if channel == 'panel':
@@ -116,6 +162,7 @@ def clean(datapath):
 def process(data):
     df = data.copy()
     results = pd.DataFrame()
+    count = len(results)
     if df['channel'].iloc[0] == 'smr':
         time_input =  pd.Timestamp.now().strftime('%H:%M:%S')
         df['order_time'] = pd.to_datetime(df['order_time'], format='%d %b %Y')
@@ -468,27 +515,46 @@ def generate_query(data, customer_names, po_expire):
 
 def insert(query):
     connection = pymysql.connect(host='192.168.1.219', user='root', password='sarwa', db='osc_clone')
+    messages = None
+
     try:
         query_lines = query.splitlines()
+        count = 0
         with connection.cursor() as cursor:
             for i, line in tqdm(enumerate(query_lines), total=len(query_lines), desc="Executing queries"):
                 if line.strip():  # Check if the line is not empty
                     try:
                         cursor.execute(line)
                         print(f"\nQuery {i+1} executed successfully\n")
+                        count += 1
                     except Exception as e:
                         print(f"\nError executing Query {i+1}: {e}\n")  # Print detailed error
+                        messages = twilio_client.messages.create(
+                            from_=twilio_phone_number,
+                            body=f"Error executing query {i+1}: {e}",
+                            to=to_phone_number
+                        )
         connection.commit()
         print("\nAll queries executed successfully\n")
+        messages = twilio_client.messages.create(
+            from_=twilio_phone_number,
+            body=f"Database has been updated.",
+            to=to_phone_number
+        )
     except Exception as e:
+        messages = twilio_client.messages.create(
+            from_=twilio_phone_number,
+            body=f"Error executing queries: {e}",
+            to=to_phone_number
+        )
         print("\nERROR IN DATABASE OPERATION: {}\n".format(e))
     finally:
         connection.close()
-
-
+    
+    return messages
 
 if __name__ == "__main__":
-    print('\n===============STARTING===============\n')
+    print(bold('\n===============STARTING===============\n'))
     smr_path = env.insert['smr']
     panel_path = env.insert['panel']
     customer_names_json = env.insert['customer_names']
@@ -497,15 +563,15 @@ if __name__ == "__main__":
     po_expire_json = env.insert['po_expire']
 
 
-    print('\n===============Loading customer names files===============\n')
+    print(bold('\n===============Loading customer names files===============\n'))
     with open(customer_names_json, 'r', encoding='utf-8') as f:
         customer_names = json.load(f)
 
-    print('\n===============Loading start code files===============\n')
+    print(bold('\n===============Loading start code files===============\n'))
     with open(po_expire_json, 'r') as f:
         po_expire = json.load(f)
 
-    print('\n===============Starting loop===============\n')
+    print(bold('\n===============Starting loop===============\n'))
     try:
         while True:
             smr_exists = os.path.exists(smr_path)
@@ -513,11 +579,17 @@ if __name__ == "__main__":
 
             if smr_exists:
                 print(f'\n{smr_path} file found, cleaning it\n')
+                message = twilio_client.messages.create(
+                    from_=twilio_phone_number,
+                    body=f"SMR file found, {random.choice(magic_loading_texts).lower()}",
+                    to=to_phone_number
+                )
                 cleaned = clean(smr_path)
                 print('\nProcessing cleaned file\n')
                 processed = process(cleaned)
 
                 if not processed.empty:
+                    time.sleep(5)
                     print('\nGenerating query\n')
                     query = generate_query(processed, customer_names, po_expire)
                     if query is not None:
@@ -529,11 +601,17 @@ if __name__ == "__main__":
 
             if panel_exists:
                 print(f'\n{panel_path} file found, cleaning it\n')
+                message = twilio_client.messages.create(
+                    from_=twilio_phone_number,
+                    body=f"PANEL file found, {random.choice(magic_loading_texts).lower()}",
+                    to=to_phone_number
+                )
                 cleaned = clean(panel_path)
                 print('\nProcessing cleaned file\n')
                 processed = process(cleaned)
 
                 if not processed.empty:
+                    time.sleep(5)
                     print('\nGenerating query\n')
                     query = generate_query(processed, customer_names, po_expire)
                     if query is not None:
@@ -544,11 +622,11 @@ if __name__ == "__main__":
                 shutil.move(panel_path, panel_path.replace('PANEL&SMR', 'PANEL&SMR/ORIGINAL'))
 
             if not smr_exists and not panel_exists:
-                print('No files found. Waiting...')
+                print(bold('\nNo files found. Waiting...'))
                 now = datetime.now()
                 current = now.strftime("%H:%M:%S")
-                print("\nCurrent Time =", current)
-                print('To exit, press CTRL+C')
+                print(bold("Current Time ="), current)
+                print(bold('To exit, press CTRL+C'))
                 time.sleep(3)
 
     except KeyboardInterrupt:
