@@ -370,7 +370,7 @@ def generate_query(data, customer_names, po_expire):
                 "('{}','{}','{}','{}','{}','{}','{}','{}','{}','{}')".format(
                     no_inv,
                     no_po,
-                    'non-panel',
+                    'NON-PANEL',
                     customer_number,
                     customer_name,
                     order_time,
@@ -477,7 +477,7 @@ def generate_query(data, customer_names, po_expire):
                 "('{}','{}','{}','{}','{}','{}','{}','{}','{}','{}')".format(
                     no_inv,
                     no_po,
-                    'non-panel',
+                    'PANEL',
                     customer_number,
                     customer_name,
                     order_time,
