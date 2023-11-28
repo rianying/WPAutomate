@@ -255,6 +255,35 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
     # Return the full combined query
     return full_query
 
+def new_customer(url):
+    df = pd.read_csv(url)
+    #take only 'Date','ID','Nama Pelanggan','Alamat','Kota','Provinsi','Kode pos','Telepon' column
+    df = df[['Date','ID','Nama Pelanggan','Alamat','Kota','Provinsi','Kode pos','Telepon']]
+    # convert Telepon to str and clean it
+    df['Telepon'] = df['Telepon'].astype(str)
+    df['Telepon'] = df['Telepon'].str.replace('.0','')
+    df['Telepon'] = df['Telepon'].str.replace('nan','')
+    # filling na on date column
+    df['Date'].ffill(inplace=True)
+    # filling na on kode pos column
+    df['Kode pos'] = df['Kode pos'].fillna('')
+    # cleaning customer name
+    df['Nama Pelanggan'] = df['Nama Pelanggan'].str.strip()
+    # final filling na
+    df = df.fillna('')
+    # final duplicate drop
+    df.drop_duplicates(subset=['ID'], inplace=True)
+    
+    with open(customer_names_json) as f:
+        data = json.load(f)
+
+    for index,row in df.iterrows():
+        if row['ID'] not in data:
+            data[row['ID']] = row['Nama Pelanggan'].replace('\u00a0', ' ')
+            print(f"New customer added: {row['Nama Pelanggan']}")
+            with open('env/customer_names.json', 'w') as outfile:
+                json.dump(data, outfile, indent=4)
+
 
 def copy_to_clipboard(text):
     try:
@@ -274,12 +303,15 @@ if __name__ == "__main__":
     po_fetched = env.preorder['po_fetched']
     customer_names_json = env.preorder['customer_names']
     po_expire_file = env.preorder['po_expire']
+    customer_url = f"https://docs.google.com/spreadsheets/d/1ZjeukSSxbYccdee2bYZl3ldZ4ib2PCJE66I-Q5RwNyM/gviz/tq?tqx=out:csv&sheet=Sheet1"
     
     with open(customer_names_json, 'r') as f:
         customer_names = json.load(f)
     
     with open(po_expire_file, 'r') as f:
         po_expire_data = json.load(f)
+
+    new_customer(customer_url)
 
     try:
         input_file = env.preorder['input_file']
