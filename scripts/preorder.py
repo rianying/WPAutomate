@@ -17,7 +17,8 @@ from env import env
 """
 Script otomasi preorder dan validasi PO
 """
-start_code_path = env.preorder['start_code']
+
+
 def clean(input_file, output_file):
     data = pd.read_csv(input_file, sep=';', skiprows=4, encoding='latin-1')
     data.rename(columns={'Tgl Pesan': 'order_date', 'Unnamed: 2': 'no_SO', 'No. Pesanan': 'customer_number', 'Unnamed: 4': 'customer_name', 'Unnamed: 6': 'no_PO'}, inplace=True)
@@ -107,9 +108,7 @@ def process_csv(data):
     with open(start_code_path, 'w') as file:
         json.dump(segments_startcodes, file, indent=4)
 
-# Functions from preorder.py
-
-def generate_single_query(csv_file, customer_names, po_expire_data):
+def generate_single_query(csv_file):
     try:
         df = pd.read_csv(csv_file)
     except pd.errors.EmptyDataError:
@@ -117,6 +116,12 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
         os.remove(input_file)
         print("\nSO file removed.")
         return None
+    
+    with open(customer_names_json) as f:
+        customer_names = json.load(f)
+
+    with open(po_expire_file, 'r') as f:
+        po_expire_data = json.load(f)
     
     new_customer_query_values = []
     preorder_query_values = []
@@ -126,8 +131,6 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
     for index, row in df.iterrows():
 
         customer_number = row['customer_number']
-        if str(customer_number).startswith('MT-KF'):
-            continue
 
         order_time = np.datetime64(row['order_date'])
 
@@ -257,21 +260,14 @@ def generate_single_query(csv_file, customer_names, po_expire_data):
 
 def new_customer(url):
     df = pd.read_csv(url)
-    #take only 'Date','ID','Nama Pelanggan','Alamat','Kota','Provinsi','Kode pos','Telepon' column
     df = df[['Date','ID','Nama Pelanggan','Alamat','Kota','Provinsi','Kode pos','Telepon']]
-    # convert Telepon to str and clean it
     df['Telepon'] = df['Telepon'].astype(str)
     df['Telepon'] = df['Telepon'].str.replace('.0','')
     df['Telepon'] = df['Telepon'].str.replace('nan','')
-    # filling na on date column
     df['Date'].ffill(inplace=True)
-    # filling na on kode pos column
     df['Kode pos'] = df['Kode pos'].fillna('')
-    # cleaning customer name
     df['Nama Pelanggan'] = df['Nama Pelanggan'].str.strip()
-    # final filling na
     df = df.fillna('')
-    # final duplicate drop
     df.drop_duplicates(subset=['ID'], inplace=True)
     
     with open(customer_names_json) as f:
@@ -281,9 +277,8 @@ def new_customer(url):
         if row['ID'] not in data:
             data[row['ID']] = row['Nama Pelanggan'].replace('\u00a0', ' ')
             print(f"New customer added: {row['Nama Pelanggan']}")
-            with open('env/customer_names.json', 'w') as outfile:
+            with open(customer_names_json, 'w') as outfile:
                 json.dump(data, outfile, indent=4)
-
 
 def copy_to_clipboard(text):
     try:
@@ -302,14 +297,9 @@ if __name__ == "__main__":
     cleaned_file = env.preorder['so_cleaned']
     po_fetched = env.preorder['po_fetched']
     customer_names_json = env.preorder['customer_names']
+    start_code_path = env.preorder['start_code']
     po_expire_file = env.preorder['po_expire']
     customer_url = f"https://docs.google.com/spreadsheets/d/1ZjeukSSxbYccdee2bYZl3ldZ4ib2PCJE66I-Q5RwNyM/gviz/tq?tqx=out:csv&sheet=Sheet1"
-    
-    with open(customer_names_json, 'r') as f:
-        customer_names = json.load(f)
-    
-    with open(po_expire_file, 'r') as f:
-        po_expire_data = json.load(f)
 
     new_customer(customer_url)
 
@@ -328,7 +318,7 @@ if __name__ == "__main__":
                     print(f'\n\nError: {e}')
             
                 if os.path.exists(po_fetched):
-                    query = generate_single_query(po_fetched, customer_names, po_expire_data)
+                    query = generate_single_query(po_fetched)
                     if query is not None:
                         copy_to_clipboard(query)
                         os.remove(po_fetched)
