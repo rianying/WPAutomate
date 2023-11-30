@@ -18,6 +18,27 @@ from env import env
 Script otomasi preorder dan validasi PO
 """
 
+def new_customer(url):
+    df = pd.read_csv(url)
+    df = df[['Date','ID','Nama Pelanggan','Alamat','Kota','Provinsi','Kode pos','Telepon']]
+    df['Telepon'] = df['Telepon'].astype(str)
+    df['Telepon'] = df['Telepon'].str.replace('.0','')
+    df['Telepon'] = df['Telepon'].str.replace('nan','')
+    df['Date'].ffill(inplace=True)
+    df['Kode pos'] = df['Kode pos'].fillna('')
+    df['Nama Pelanggan'] = df['Nama Pelanggan'].str.strip()
+    df = df.fillna('')
+    df.drop_duplicates(subset=['ID'], inplace=True)
+    
+    with open(customer_names_json) as f:
+        data = json.load(f)
+
+    for index,row in df.iterrows():
+        if row['ID'] not in data:
+            data[row['ID']] = row['Nama Pelanggan'].replace('\u00a0', ' ')
+            print(f"New customer added: {row['Nama Pelanggan']}")
+            with open(customer_names_json, 'w') as outfile:
+                json.dump(data, outfile, indent=4)
 
 def clean(input_file, output_file):
     data = pd.read_csv(input_file, sep=';', skiprows=4, encoding='latin-1')
@@ -147,6 +168,8 @@ def generate_single_query(csv_file):
                 regency = input(f"Enter regency for {customer_name_input}: ")
                 province = input(f"Enter province for {customer_name_input}: ")
                 customer_address = input(f"Enter customer address for {customer_name_input}: ")
+                customer_name = customer_name_input
+
                 # Initialize expedition_name to None to enter the loop
 
                 expedition_name = None
@@ -258,28 +281,6 @@ def generate_single_query(csv_file):
     # Return the full combined query
     return full_query
 
-def new_customer(url):
-    df = pd.read_csv(url)
-    df = df[['Date','ID','Nama Pelanggan','Alamat','Kota','Provinsi','Kode pos','Telepon']]
-    df['Telepon'] = df['Telepon'].astype(str)
-    df['Telepon'] = df['Telepon'].str.replace('.0','')
-    df['Telepon'] = df['Telepon'].str.replace('nan','')
-    df['Date'].ffill(inplace=True)
-    df['Kode pos'] = df['Kode pos'].fillna('')
-    df['Nama Pelanggan'] = df['Nama Pelanggan'].str.strip()
-    df = df.fillna('')
-    df.drop_duplicates(subset=['ID'], inplace=True)
-    
-    with open(customer_names_json) as f:
-        data = json.load(f)
-
-    for index,row in df.iterrows():
-        if row['ID'] not in data:
-            data[row['ID']] = row['Nama Pelanggan'].replace('\u00a0', ' ')
-            print(f"New customer added: {row['Nama Pelanggan']}")
-            with open(customer_names_json, 'w') as outfile:
-                json.dump(data, outfile, indent=4)
-
 def copy_to_clipboard(text):
     try:
         if platform.system() == 'Darwin':
@@ -301,12 +302,12 @@ if __name__ == "__main__":
     po_expire_file = env.preorder['po_expire']
     customer_url = f"https://docs.google.com/spreadsheets/d/1ZjeukSSxbYccdee2bYZl3ldZ4ib2PCJE66I-Q5RwNyM/gviz/tq?tqx=out:csv&sheet=Sheet1"
 
-    new_customer(customer_url)
-
     try:
         input_file = env.preorder['input_file']
 
         while True:
+            new_customer(customer_url)
+
             if os.path.exists(input_file):
                 try:
                     clean(input_file, cleaned_file)
